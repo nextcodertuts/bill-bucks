@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  avatarUrl      String?
+  phoneNumber    String    @unique
+  hashedPassword String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  subscribe      Boolean   @default(false)
+  sessions       Session[]
+  invoices       Invoice[]
+}
+
+model PushToken {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  platform   String? // 'ios' or 'android'
+  deviceInfo Json? // Store device information
+  lastUsed   DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("push_tokens")
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Merchant {
+  id        String    @id @default(cuid())
+  name      String
+  address   String
+  phone     String
+  expiresAt DateTime
+  invoices  Invoice[]
+}
+
+model Invoice {
+  id         String   @id @default(cuid())
+  amount     Decimal  @db.Decimal(10, 2) // Supports up to 99,999,999.99
+  imageUrl   String // URL to the stored invoice image
+  status     String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  notes      String? // Optional notes about the invoice
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String
+  merchantId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([merchantId])
+  @@index([status])
+  @@index([createdAt])
+}
