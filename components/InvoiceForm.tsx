@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState, useCallback } from "react";
@@ -14,6 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { MerchantSearch } from "./merchant-search";
+import { expo } from "@/lib/expo-bridge";
 
 interface Merchant {
   id: string;
@@ -33,15 +35,23 @@ export default function InvoiceForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleImageChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-        toast.error("Please upload a valid image (JPEG, PNG, or WebP)");
+  const handleImagePick = useCallback(async () => {
+    try {
+      const hasPermission = await expo.requestCameraPermission();
+      if (!hasPermission) {
+        toast.error("Camera permission denied");
         return;
       }
+
+      const result = await expo.pickImage();
+      if (!result) {
+        return;
+      }
+
+      // Convert base64 to File object
+      const response = await fetch(result.uri);
+      const blob = await response.blob();
+      const file = new File([blob], "invoice.jpg", { type: "image/jpeg" });
 
       if (file.size > MAX_FILE_SIZE) {
         toast.error("Image size must be less than 5MB");
@@ -49,13 +59,12 @@ export default function InvoiceForm() {
       }
 
       setInvoiceImage(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-
-      return () => URL.revokeObjectURL(url);
-    },
-    []
-  );
+      setPreviewUrl(result.uri);
+    } catch (error) {
+      console.error("Error picking image:", error);
+      toast.error("Failed to pick image");
+    }
+  }, []);
 
   const validateForm = () => {
     if (!selectedMerchant) {
@@ -79,7 +88,6 @@ export default function InvoiceForm() {
 
     setLoading(true);
 
-    // Create FormData to send everything in ONE request
     const formData = new FormData();
     formData.append("file", invoiceImage!);
     formData.append("merchantId", selectedMerchant!.id);
@@ -146,57 +154,31 @@ export default function InvoiceForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="invoiceImage">Invoice Image</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="invoiceImage"
-                type="file"
-                accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                onChange={handleImageChange}
+            <Label>Invoice Image</Label>
+            <div className="flex flex-col items-center gap-4">
+              <Button
+                type="button"
+                onClick={handleImagePick}
                 disabled={loading}
-                required
-                className="hidden" // Hide the default input
-              />
-              <Label
-                htmlFor="invoiceImage"
-                className={`cursor-pointer inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className="w-full"
               >
-                <svg
-                  className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                {loading ? "Uploading..." : "Take Photo or Choose from Gallery"}
+              </Button>
+
+              {previewUrl && (
+                <div className="mt-2 w-full">
+                  <img
+                    src={previewUrl}
+                    alt="Invoice preview"
+                    className="w-full h-auto rounded-md object-contain"
+                    onError={() => {
+                      setPreviewUrl(null);
+                      toast.error("Failed to load image preview");
+                    }}
                   />
-                </svg>
-                <span>Choose File</span>
-              </Label>
-              {invoiceImage && (
-                <span className="text-sm text-gray-500 truncate max-w-[200px]">
-                  {invoiceImage.name}
-                </span>
+                </div>
               )}
             </div>
-            {previewUrl && (
-              <div className="mt-2">
-                <img
-                  src={previewUrl}
-                  alt="Invoice preview"
-                  className="max-w-full h-auto rounded-md object-contain"
-                  onError={() => {
-                    setPreviewUrl(null);
-                    toast.error("Failed to load image preview");
-                  }}
-                />
-              </div>
-            )}
           </div>
 
           <Button
