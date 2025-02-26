@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,6 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { MerchantSearch } from "./merchant-search";
-import { expo } from "@/lib/expo-bridge";
 
 interface Merchant {
   id: string;
@@ -33,38 +31,30 @@ export default function InvoiceForm() {
   const [invoiceImage, setInvoiceImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const handleImagePick = useCallback(async () => {
-    try {
-      const hasPermission = await expo.requestCameraPermission();
-      if (!hasPermission) {
-        toast.error("Camera permission denied");
-        return;
-      }
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-      const result = await expo.pickImage();
-      if (!result) {
-        return;
-      }
-
-      // Convert base64 to File object
-      const response = await fetch(result.uri);
-      const blob = await response.blob();
-      const file = new File([blob], "invoice.jpg", { type: "image/jpeg" });
-
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error("Image size must be less than 5MB");
-        return;
-      }
-
-      setInvoiceImage(file);
-      setPreviewUrl(result.uri);
-    } catch (error) {
-      console.error("Error picking image:", error);
-      toast.error("Failed to pick image");
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("Image size must be less than 5MB");
+      return;
     }
-  }, []);
+
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      toast.error("Only JPEG, PNG, and WEBP images are accepted");
+      return;
+    }
+
+    setInvoiceImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const handleFileButtonClick = () => {
+    fileInputRef.current?.click();
+  };
 
   const validateForm = () => {
     if (!selectedMerchant) {
@@ -155,22 +145,37 @@ export default function InvoiceForm() {
 
           <div className="space-y-2">
             <Label>Invoice Image</Label>
-            <div className="flex flex-col items-center gap-4">
-              <Button
-                type="button"
-                onClick={handleImagePick}
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? "Uploading..." : "Take Photo or Choose from Gallery"}
-              </Button>
-
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleFileButtonClick}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  {invoiceImage ? "Change Image" : "Upload Image"}
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                  onChange={handleImageChange}
+                  className="hidden"
+                  disabled={loading}
+                />
+              </div>
+              {invoiceImage && (
+                <p className="text-sm text-muted-foreground">
+                  Selected file: {invoiceImage.name}
+                </p>
+              )}
               {previewUrl && (
                 <div className="mt-2 w-full">
                   <img
                     src={previewUrl}
                     alt="Invoice preview"
-                    className="w-full h-auto rounded-md object-contain"
+                    className="w-full h-auto rounded-md object-contain border"
                     onError={() => {
                       setPreviewUrl(null);
                       toast.error("Failed to load image preview");
