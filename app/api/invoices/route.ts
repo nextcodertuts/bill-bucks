@@ -1,38 +1,71 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+//@ts-nocheck
 import { validateRequest } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
     const { user } = await validateRequest();
-
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Read form data (image + other fields)
     const formData = await request.formData();
-    const amount = formData.get("amount") as string;
+    const file = formData.get("file") as File;
     const merchantId = formData.get("merchantId") as string;
-    const imageUrl = formData.get("imageUrl") as string;
-    const notes = formData.get("notes") as string;
+    const amount = formData.get("amount") as string;
 
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+    if (!merchantId || !amount) {
+      return NextResponse.json(
+        { error: "Merchant ID and amount are required" },
+        { status: 400 }
+      );
+    }
+
+    // Convert file to Blob
+    const arrayBuffer = await file.arrayBuffer();
+    const blob = new Blob([arrayBuffer], { type: file.type });
+
+    // Upload to Cloudinary
+    const cloudinaryFormData = new FormData();
+    cloudinaryFormData.append("file", blob, file.name);
+    cloudinaryFormData.append("upload_preset", "invoices");
+
+    const cloudinaryResponse = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: cloudinaryFormData,
+      }
+    );
+
+    if (!cloudinaryResponse.ok) {
+      throw new Error("Failed to upload image to Cloudinary");
+    }
+
+    const cloudinaryData = await cloudinaryResponse.json();
+    const imageUrl = cloudinaryData.secure_url;
+
+    // Save invoice to database using Prisma
     const invoice = await prisma.invoice.create({
       data: {
-        amount: parseFloat(amount),
         merchantId,
-        imageUrl,
-        notes,
         userId: user.id,
+        amount: parseFloat(amount),
+        imageUrl,
       },
     });
 
-    return NextResponse.json(invoice);
+    return NextResponse.json(invoice, { status: 201 });
   } catch (error) {
-    console.error("Error creating invoice:", error);
-    return NextResponse.json(
-      { error: "Failed to create invoice" },
-      { status: 500 }
-    );
+    console.error("Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 

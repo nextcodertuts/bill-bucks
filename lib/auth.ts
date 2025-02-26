@@ -21,6 +21,7 @@ export const lucia = new Lucia(adapter, {
       name: attributes.name,
       subscribe: attributes.subscribe,
       phoneNumber: attributes.phoneNumber,
+      createdAt: attributes.createdAt,
     };
   },
 });
@@ -39,6 +40,7 @@ interface DatabaseUserAttributes {
   name: string;
   subscribe: null | undefined | false;
   phoneNumber: string;
+  createdAt: string;
 }
 
 export const validateRequest = cache(
