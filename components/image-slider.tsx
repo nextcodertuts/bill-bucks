@@ -138,7 +138,7 @@ export function ImageSlider() {
             {extendedImages.map((image, index) => (
               <div
                 key={index}
-                className="relative w-full h-full flex-shrink-0"
+                className="relative w-full h-full flex-shrink-0 z-10 bg-gradient-to-b from-transparent via-purple-500/20 to-purple-900/90"
                 aria-hidden={index !== currentIndex}
               >
                 <Image

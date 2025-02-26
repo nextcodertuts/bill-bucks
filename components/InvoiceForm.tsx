@@ -1,16 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
-// components/InvoiceForm.tsx
 "use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,20 +12,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { MerchantSearch } from "./merchant-search";
 
-// Demo merchant data
-const merchants = [
-  { id: "1", name: "Amazon" },
-  { id: "2", name: "Walmart" },
-  { id: "3", name: "Best Buy" },
-  { id: "4", name: "Target" },
-];
+interface Merchant {
+  id: string;
+  name: string;
+}
 
 export default function InvoiceForm() {
-  const [selectedMerchant, setSelectedMerchant] = useState("");
+  const [selectedMerchant, setSelectedMerchant] = useState<Merchant | null>(
+    null
+  );
   const [invoiceAmount, setInvoiceAmount] = useState("");
   const [invoiceImage, setInvoiceImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -43,24 +39,51 @@ export default function InvoiceForm() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedMerchant || !invoiceAmount || !invoiceImage) return;
 
-    // Form data handling
-    const formData = {
-      merchant: selectedMerchant,
-      amount: invoiceAmount,
-      image: invoiceImage,
-    };
+    setLoading(true);
+    try {
+      // First, upload the image
+      const imageFormData = new FormData();
+      imageFormData.append("file", invoiceImage);
 
-    console.log("Form submitted:", formData);
-    // Here you would typically send this to your API
+      const uploadResponse = await fetch("/api/upload", {
+        method: "POST",
+        body: imageFormData,
+      });
 
-    // Reset form
-    setSelectedMerchant("");
-    setInvoiceAmount("");
-    setInvoiceImage(null);
-    setPreviewUrl(null);
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { url: imageUrl } = await uploadResponse.json();
+
+      // Then create the invoice
+      const invoiceFormData = new FormData();
+      invoiceFormData.append("merchantId", selectedMerchant.id);
+      invoiceFormData.append("amount", invoiceAmount);
+      invoiceFormData.append("imageUrl", imageUrl);
+
+      const invoiceResponse = await fetch("/api/invoices", {
+        method: "POST",
+        body: invoiceFormData,
+      });
+
+      if (!invoiceResponse.ok) {
+        throw new Error("Failed to create invoice");
+      }
+
+      toast.success("Invoice created successfully!");
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+      toast.error("Failed to create invoice");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,27 +94,19 @@ export default function InvoiceForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Merchant Selection */}
           <div className="space-y-2">
-            <Label htmlFor="merchant">Merchant</Label>
-            <Select
-              value={selectedMerchant}
-              onValueChange={setSelectedMerchant}
-            >
-              <SelectTrigger id="merchant">
-                <SelectValue placeholder="Select a merchant" />
-              </SelectTrigger>
-              <SelectContent>
-                {merchants.map((merchant) => (
-                  <SelectItem key={merchant.id} value={merchant.id}>
-                    {merchant.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Merchant</Label>
+            <MerchantSearch
+              onSelect={(merchant) => setSelectedMerchant(merchant)}
+              className="w-full"
+            />
+            {selectedMerchant && (
+              <p className="text-sm text-muted-foreground">
+                Selected: {selectedMerchant.name}
+              </p>
+            )}
           </div>
 
-          {/* Invoice Amount */}
           <div className="space-y-2">
             <Label htmlFor="amount">Invoice Amount</Label>
             <Input
@@ -104,7 +119,6 @@ export default function InvoiceForm() {
             />
           </div>
 
-          {/* Image Upload */}
           <div className="space-y-2">
             <Label htmlFor="invoiceImage">Invoice Image</Label>
             <Input
@@ -124,13 +138,20 @@ export default function InvoiceForm() {
             )}
           </div>
 
-          {/* Submit Button */}
           <Button
             type="submit"
             className="w-full"
-            disabled={!selectedMerchant || !invoiceAmount || !invoiceImage}
+            disabled={
+              loading || !selectedMerchant || !invoiceAmount || !invoiceImage
+            }
           >
-            Submit Invoice
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              </div>
+            ) : (
+              "Submit Invoice"
+            )}
           </Button>
         </form>
       </CardContent>
