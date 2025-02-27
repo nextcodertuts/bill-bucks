@@ -70,8 +70,8 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-purple-50">
-      <div>
-        <Image src="/Group.png" height={250} width={250} alt="img" />
+      <div className="pb-6">
+        <Image src="/bill-bucks.png" height={150} width={150} alt="img" />
       </div>
       <Card className="w-full max-w-md overflow-hidden shadow-lg bg-transparent border-0">
         <CardHeader className="pb-4">

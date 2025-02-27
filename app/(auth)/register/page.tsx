@@ -25,6 +25,7 @@ import Link from "next/link";
 import { register } from "./action";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, Lock, UserRound, Phone } from "lucide-react";
+import Image from "next/image";
 
 const requiredString = z.string().trim().min(1, "Required");
 
@@ -86,12 +87,15 @@ export default function RegisterPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-purple-50">
+      <div className="">
+        <Image src="/bill-bucks.png" height={150} width={150} alt="img" />
+      </div>
       <div>
         <p className="font-bold text-2xl my-6">Register</p>
       </div>
 
-      <Card className="w-full max-w-md overflow-hidden shadow-lg border-0 bg-transparent">
-        <CardHeader className="py-0" hidden>
+      <Card className="w-full max-w-md overflow-hidden  border-0 bg-transparent">
+        <CardHeader className="py-0">
           <CardTitle hidden>Register</CardTitle>
         </CardHeader>
         <CardContent className="p-4 space-y-6">
