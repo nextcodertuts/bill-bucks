@@ -111,7 +111,7 @@ export default function RegisterPage() {
                       <div className="relative">
                         <Input
                           {...field}
-                          type="tel"
+                          type="text"
                           placeholder="Enter your Name"
                           className="rounded-full pl-10"
                         />
