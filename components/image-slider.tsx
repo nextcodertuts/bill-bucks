@@ -19,6 +19,11 @@ const images = [
     alt: "Image 1",
     title: "Beautiful Landscape",
   },
+  {
+    src: "https://gist.github.com/user-attachments/assets/c8b1673b-6799-4ef5-9da7-7c418467c790",
+    alt: "Image 3",
+    title: "Beautiful Landscape",
+  },
 ];
 
 export function ImageSlider() {
