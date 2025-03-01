@@ -10,24 +10,14 @@ import { cn } from "@/lib/utils";
 // Sample image array - you can replace these with your own images
 const images = [
   {
-    src: "/next.svg",
+    src: "https://gist.github.com/user-attachments/assets/a2d529ad-3919-4bb8-8c0b-30a3b0b004f7",
     alt: "Image 1",
     title: "Beautiful Landscape",
   },
   {
-    src: "/next.svg",
-    alt: "Image 2",
-    title: "City Skyline",
-  },
-  {
-    src: "/next.svg",
-    alt: "Image 3",
-    title: "Mountain View",
-  },
-  {
-    src: "/next.svg",
-    alt: "Image 4",
-    title: "Ocean Sunset",
+    src: "https://gist.github.com/user-attachments/assets/a2d529ad-3919-4bb8-8c0b-30a3b0b004f7",
+    alt: "Image 1",
+    title: "Beautiful Landscape",
   },
 ];
 
@@ -37,7 +27,7 @@ export function ImageSlider() {
   const [touchStart, setTouchStart] = React.useState(0);
   const [touchEnd, setTouchEnd] = React.useState(0);
 
-  const slideInterval = 3000; // 3 seconds
+  const slideInterval = 5000; // 3 seconds
   const minSwipeDistance = 50;
 
   // Create circular array for infinite scroll
@@ -123,7 +113,7 @@ export function ImageSlider() {
       <Card className="relative overflow-hidden rounded-lg">
         {/* Image container */}
         <div
-          className="aspect-[16/9] relative"
+          className=""
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
@@ -144,8 +134,9 @@ export function ImageSlider() {
                 <Image
                   src={image.src || "/placeholder.svg"}
                   alt={image.alt}
-                  fill
-                  className="object-cover"
+                  width={400}
+                  height={250}
+                  className="object-contain"
                   priority={index === 0}
                 />
               </div>
