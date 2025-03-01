@@ -3,7 +3,7 @@ import Image from "next/image";
 
 // Sample image data (replace with your own)
 const images = [
-  { id: 1, src: "/brand/meesho.png", alt: "Image 1" },
+  { id: 1, src: "/brand/Meesho.png", alt: "Image 1" },
   { id: 2, src: "/brand/flipkart.png", alt: "Image 2" },
   { id: 3, src: "/brand/amazon.jpg", alt: "Image 3" },
   { id: 4, src: "/brand/blinkit.jpg", alt: "Image 4" },
