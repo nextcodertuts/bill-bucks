@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 // Sample image array - you can replace these with your own images
 const images = [
   {
-    src: "https://gist.github.com/user-attachments/assets/a2d529ad-3919-4bb8-8c0b-30a3b0b004f7",
+    src: "https://gist.github.com/user-attachments/assets/efd3a053-5569-4637-8379-5c33106cb255",
     alt: "Image 1",
     title: "Beautiful Landscape",
   },
