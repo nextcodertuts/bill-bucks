@@ -241,6 +241,7 @@ export default function RegisterPage() {
           </div>
         </CardContent>
       </Card>
+      <div className="h-[500px]"></div>
     </div>
   );
 }

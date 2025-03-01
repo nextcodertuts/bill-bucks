@@ -165,6 +165,7 @@ export default function LoginPage() {
           </div>
         </CardContent>
       </Card>
+      <div className="h-32"></div>
     </div>
   );
 }
