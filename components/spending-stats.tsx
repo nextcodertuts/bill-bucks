@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatCurrency } from "@/lib/utils";
+import MediumRectangleAd from "./ads/MediumRectangleAd";
 
 interface SpendingStatsProps {
   userId: string;
@@ -76,7 +77,7 @@ export function SpendingStats({ userId }: SpendingStatsProps) {
             </div>
           </CardContent>
         </Card>
-
+        <MediumRectangleAd />
         <Card>
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>

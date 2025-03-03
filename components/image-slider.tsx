@@ -149,11 +149,11 @@ export function ImageSlider() {
           </div>
 
           {/* Navigation buttons */}
-          <div className="absolute inset-0 flex items-center justify-between p-4">
+          <div className="absolute inset-0 flex items-center justify-between p-2">
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-full bg-background/50 backdrop-blur-sm"
+              className="h-6 w-6 rounded-full bg-background/50 backdrop-blur-sm"
               onClick={handlePrevious}
               aria-label="Previous image"
             >
@@ -162,7 +162,7 @@ export function ImageSlider() {
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-full bg-background/50 backdrop-blur-sm"
+              className="h-6 w-6 rounded-full bg-background/50 backdrop-blur-sm"
               onClick={handleNext}
               aria-label="Next image"
             >

@@ -1,3 +1,4 @@
+import AdsterraBanner from "@/components/ads/AdsterraBanner";
 import { validateRequest } from "@/lib/auth";
 
 export default async function UserProfilePage() {
@@ -60,6 +61,7 @@ export default async function UserProfilePage() {
           </span>
         </div>
       </div>
+      <AdsterraBanner />
     </div>
   );
 }
