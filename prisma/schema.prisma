@@ -8,16 +8,20 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  name           String?
-  avatarUrl      String?
-  phoneNumber    String    @unique
-  hashedPassword String
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  subscribe      Boolean   @default(false)
-  sessions       Session[]
-  invoices       Invoice[]
+  id              String            @id @default(cuid())
+  name            String?
+  avatarUrl       String?
+  phoneNumber     String            @unique
+  hashedPassword  String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  subscribe       Boolean           @default(false)
+  balance         Decimal           @default(0) @db.Decimal(10, 2) // User's balance for referral rewards
+  referralCode    String            @unique @default(cuid()) // Unique referral code for each user
+  referredBy      String? // Referral code of the user who referred this user
+  sessions        Session[]
+  invoices        Invoice[]
+  referralHistory ReferralHistory[] // History of referral rewards
 }
 
 model PushToken {
@@ -69,4 +73,15 @@ model Invoice {
   @@index([merchantId])
   @@index([status])
   @@index([createdAt])
+}
+
+model ReferralHistory {
+  id             String   @id @default(cuid())
+  userId         String // User who received the reward
+  referredUserId String // User who was referred
+  amount         Decimal  @db.Decimal(10, 2)
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

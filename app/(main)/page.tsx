@@ -15,6 +15,7 @@ export default async function Home() {
   return (
     <div className="p-4 space-y-6">
       <AdComponent />
+
       <div>
         <h2 className="text-xl font-semibold pl-2">Online Merchants</h2>
         <HorizontalScroll />

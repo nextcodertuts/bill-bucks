@@ -1,5 +1,9 @@
 import AdsterraBanner from "@/components/ads/AdsterraBanner";
 import { validateRequest } from "@/lib/auth";
+import { formatCurrency } from "@/lib/utils";
+import Link from "next/link";
+import { Gift } from "lucide-react";
+import prisma from "@/lib/prisma";
 
 export default async function UserProfilePage() {
   const { user } = await validateRequest();
@@ -12,8 +16,17 @@ export default async function UserProfilePage() {
     .map((n) => n[0])
     .join("");
 
+  // Fetch user balance
+  const userWithBalance = await prisma.user.findUnique({
+    where: { id: user?.id },
+    select: { balance: true, referralCode: true },
+  });
+
+  const balance = userWithBalance?.balance || 0;
+  const referralCode = userWithBalance?.referralCode || "";
+
   return (
-    <div className="max-w-3xl mx-auto py-10 px-6  mt-24">
+    <div className="max-w-3xl mx-auto py-10 px-6 mt-24">
       {/* Profile Header */}
       <div className="flex items-center gap-6 border-b pb-6">
         {/* Profile Avatar */}
@@ -26,14 +39,13 @@ export default async function UserProfilePage() {
           <h1 className="text-2xl font-bold capitalize">{userName}</h1>
           <p className="text-gray-600 text-sm">📞 {userPhone}</p>
 
-          {/* Subscription Status */}
-          {/* <span
-            className={`px-3 py-1 text-sm font-semibold rounded-full ${
-              isSubscribed ? "bg-green-500 text-white" : "bg-red-500 text-white"
-            }`}
-          >
-            {isSubscribed ? "Subscribed" : "Not Subscribed"}
-          </span> */}
+          {/* Referral Balance */}
+          <div className="flex items-center gap-2 text-purple-600">
+            <Gift className="h-4 w-4" />
+            <span className="font-semibold">
+              {formatCurrency(Number(balance))}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -59,6 +71,26 @@ export default async function UserProfilePage() {
               year: "numeric",
             }) || "Unknown"}
           </span>
+        </div>
+
+        {/* Referral Section */}
+        <div className="mt-8 p-4 bg-purple-50 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold">Referral Program</h3>
+            <Link
+              href="/referrals"
+              className="text-sm text-purple-600 font-medium hover:underline"
+            >
+              View Details
+            </Link>
+          </div>
+          <p className="text-sm text-gray-600 mb-2">
+            Share your referral code and earn ₹10 when your friends upload 5
+            invoices!
+          </p>
+          <div className="bg-white p-2 rounded border text-center font-mono">
+            {referralCode}
+          </div>
         </div>
       </div>
       <AdsterraBanner />

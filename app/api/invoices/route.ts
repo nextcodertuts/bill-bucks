@@ -62,6 +62,46 @@ export async function POST(request: Request) {
       },
     });
 
+    // Check if this user was referred by someone and if they've reached 5 invoices
+    const currentUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { referredBy: true },
+    });
+
+    if (currentUser?.referredBy) {
+      // Count the number of invoices this user has
+      const invoiceCount = await prisma.invoice.count({
+        where: { userId: user.id },
+      });
+
+      // If this is the 5th invoice, reward the referrer
+      if (invoiceCount === 5) {
+        const referrer = await prisma.user.findFirst({
+          where: { referralCode: currentUser.referredBy },
+        });
+
+        if (referrer) {
+          // Add 10 rupees to the referrer's balance
+          await prisma.user.update({
+            where: { id: referrer.id },
+            data: { balance: { increment: 10 } },
+          });
+
+          // Create a record in the referral history
+          await prisma.referralHistory.create({
+            data: {
+              userId: referrer.id,
+              referredUserId: user.id,
+              amount: 10,
+            },
+          });
+
+          // Send a notification to the referrer (optional)
+          // This would be implemented in a separate function
+        }
+      }
+    }
+
     return NextResponse.json(invoice, { status: 201 });
   } catch (error) {
     console.error("Error:", error);

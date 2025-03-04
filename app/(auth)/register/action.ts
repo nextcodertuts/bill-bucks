@@ -17,6 +17,7 @@ const registerSchema = z
       .regex(/^[0-9]{10}$/, "Invalid phone number format"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
+    referralCode: z.string().optional().nullable(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -29,13 +30,14 @@ export async function register(formData: FormData) {
     phoneNumber: formData.get("phoneNumber"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
+    referralCode: formData.get("referralCode") || null,
   });
 
   if (!result.success) {
     return { error: result.error.issues[0].message };
   }
 
-  const { name, phoneNumber, password } = result.data;
+  const { name, phoneNumber, password, referralCode } = result.data;
 
   try {
     // Check if phone number already exists
@@ -47,12 +49,24 @@ export async function register(formData: FormData) {
       return { error: "Phone number already registered" };
     }
 
+    // Validate referral code if provided
+    if (referralCode) {
+      const referrer = await prisma.user.findFirst({
+        where: { referralCode },
+      });
+
+      if (!referrer) {
+        return { error: "Invalid referral code" };
+      }
+    }
+
     const hashedPassword = await hash(password);
     const user = await prisma.user.create({
       data: {
         name,
         phoneNumber,
         hashedPassword,
+        referredBy: referralCode || null,
       },
     });
 

@@ -1,7 +1,7 @@
 "use client";
 import type React from "react";
 import Link from "next/link";
-import { Home, User, LogOut, PlusCircle } from "lucide-react";
+import { Home, User, LogOut, PlusCircle, Gift } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,17 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
           <span className="sr-only">Add</span>
         </Link>
       </Button>
-
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-white hover:bg-purple-500/20"
+        asChild
+      >
+        <Link href="/referrals">
+          <Gift className="h-12 w-12" />
+          <span className="sr-only">Referrals</span>
+        </Link>
+      </Button>
       <Button
         variant="ghost"
         size="icon"
