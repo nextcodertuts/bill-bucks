@@ -4,6 +4,7 @@ import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { Gift } from "lucide-react";
 import prisma from "@/lib/prisma";
+import { Button } from "@/components/ui/button";
 
 export default async function UserProfilePage() {
   const { user } = await validateRequest();
@@ -48,6 +49,9 @@ export default async function UserProfilePage() {
           </div>
         </div>
       </div>
+      <Button className="w-full">
+        <Link href="/withdrawals">Withdrawal</Link>
+      </Button>
 
       {/* Additional Details */}
       <div className="mt-6 space-y-4">

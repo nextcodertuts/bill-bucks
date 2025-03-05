@@ -16,19 +16,20 @@ model User {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   subscribe       Boolean           @default(false)
-  balance         Decimal           @default(0) @db.Decimal(10, 2) // User's balance for referral rewards
-  referralCode    String            @unique @default(cuid()) // Unique referral code for each user
-  referredBy      String? // Referral code of the user who referred this user
+  balance         Decimal           @default(0) @db.Decimal(10, 2)
+  referralCode    String            @unique @default(cuid())
+  referredBy      String?
   sessions        Session[]
   invoices        Invoice[]
-  referralHistory ReferralHistory[] // History of referral rewards
+  referralHistory ReferralHistory[]
+  withdrawals     Withdrawal[] // New relation
 }
 
 model PushToken {
   id         String   @id @default(cuid())
   token      String   @unique
-  platform   String? // 'ios' or 'android'
-  deviceInfo Json? // Store device information
+  platform   String?
+  deviceInfo Json?
   lastUsed   DateTime @default(now())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -58,10 +59,10 @@ model Merchant {
 
 model Invoice {
   id         String   @id @default(cuid())
-  amount     Decimal  @db.Decimal(10, 2) // Supports up to 99,999,999.99
-  imageUrl   String // URL to the stored invoice image
-  status     String   @default("PENDING") // PENDING, APPROVED, REJECTED
-  notes      String? // Optional notes about the invoice
+  amount     Decimal  @db.Decimal(10, 2)
+  imageUrl   String
+  status     String   @default("PENDING")
+  notes      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   userId     String
@@ -77,11 +78,28 @@ model Invoice {
 
 model ReferralHistory {
   id             String   @id @default(cuid())
-  userId         String // User who received the reward
-  referredUserId String // User who was referred
+  userId         String
+  referredUserId String
   amount         Decimal  @db.Decimal(10, 2)
   createdAt      DateTime @default(now())
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// New model for withdrawals
+model Withdrawal {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Decimal  @db.Decimal(10, 2)
+  upiId     String
+  status    String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  notes     String? // For admin notes or rejection reasons
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
 }

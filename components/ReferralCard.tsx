@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
@@ -6,8 +5,9 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
-import { Copy, Share2 } from "lucide-react";
+import { Copy } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface ReferralData {
   referralCode: string;
@@ -157,6 +157,10 @@ export default function ReferralCard() {
             </p>
           </div>
         </div>
+
+        <Button className="w-full">
+          <Link href="/withdrawals">Withdrawal</Link>
+        </Button>
 
         {/* <Button className="w-full" onClick={shareReferral}>
           <Share2 className="mr-2 h-4 w-4" /> Share Your Referral Link
