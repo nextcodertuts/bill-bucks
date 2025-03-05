@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-//@ts-nocheck
 import { validateRequest } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -12,18 +9,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Read form data (image + other fields)
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const merchantId = formData.get("merchantId") as string;
     const amount = formData.get("amount") as string;
+    const isMerchant = formData.get("isMerchant") === "true";
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
-    if (!merchantId || !amount) {
+    if (!amount) {
       return NextResponse.json(
-        { error: "Merchant ID and amount are required" },
+        { error: "Amount is required" },
         { status: 400 }
       );
     }
@@ -52,60 +49,78 @@ export async function POST(request: Request) {
     const cloudinaryData = await cloudinaryResponse.json();
     const imageUrl = cloudinaryData.secure_url;
 
-    // Save invoice to database using Prisma
-    const invoice = await prisma.invoice.create({
-      data: {
-        merchantId,
-        userId: user.id,
-        amount: parseFloat(amount),
-        imageUrl,
-      },
-    });
-
-    // Check if this user was referred by someone and if they've reached 5 invoices
-    const currentUser = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: { referredBy: true },
-    });
-
-    if (currentUser?.referredBy) {
-      // Count the number of invoices this user has
-      const invoiceCount = await prisma.invoice.count({
-        where: { userId: user.id },
+    // Start a transaction to handle invoice creation and cashback
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the invoice
+      const invoice = await tx.invoice.create({
+        data: {
+          merchantId: isMerchant ? merchantId : null,
+          userId: user.id,
+          amount: parseFloat(amount),
+          imageUrl,
+          isMerchant,
+        },
       });
 
-      // If this is the 5th invoice, reward the referrer
-      if (invoiceCount === 5) {
-        const referrer = await prisma.user.findFirst({
-          where: { referralCode: currentUser.referredBy },
+      let cashbackAmount = 0;
+      let cashbackType = "";
+
+      if (isMerchant) {
+        // For merchant bills - instant cashback
+        const merchant = await tx.merchant.findUnique({
+          where: { id: merchantId },
+          select: { cashbackAmount: true },
+        });
+        cashbackAmount = merchant ? Number(merchant.cashbackAmount) : 3;
+        cashbackType = "MERCHANT";
+      } else {
+        // For non-merchant bills - check if eligible for cashback
+        const updatedUser = await tx.user.update({
+          where: { id: user.id },
+          data: { nonMerchantBillCount: { increment: 1 } },
         });
 
-        if (referrer) {
-          // Add 10 rupees to the referrer's balance
-          await prisma.user.update({
-            where: { id: referrer.id },
-            data: { balance: { increment: 10 } },
-          });
-
-          // Create a record in the referral history
-          await prisma.referralHistory.create({
-            data: {
-              userId: referrer.id,
-              referredUserId: user.id,
-              amount: 10,
-            },
-          });
-
-          // Send a notification to the referrer (optional)
-          // This would be implemented in a separate function
+        if (updatedUser.nonMerchantBillCount % 15 === 0) {
+          cashbackAmount = 3;
+          cashbackType = "NON_MERCHANT";
         }
       }
-    }
 
-    return NextResponse.json(invoice, { status: 201 });
+      if (cashbackAmount > 0) {
+        // Create cashback record
+        await tx.cashback.create({
+          data: {
+            userId: user.id,
+            invoiceId: invoice.id,
+            amount: cashbackAmount,
+            type: cashbackType,
+          },
+        });
+
+        // Update user balance
+        await tx.user.update({
+          where: { id: user.id },
+          data: {
+            balance: {
+              increment: cashbackAmount,
+            },
+          },
+        });
+      }
+
+      return { invoice, cashbackAmount, cashbackType };
+    });
+
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -164,6 +179,7 @@ export async function GET(request: Request) {
       },
       include: {
         merchant: true,
+        cashback: true,
       },
       orderBy: {
         createdAt: "desc",

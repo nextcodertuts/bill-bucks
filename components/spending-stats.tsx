@@ -100,7 +100,8 @@ export function SpendingStats({ userId }: SpendingStatsProps) {
                       key={invoice.id}
                       className="flex justify-between items-center"
                     >
-                      <span>{invoice.merchant.name}</span>
+                      <span>{invoice.merchant?.name || "NON-Merchant"}</span>
+
                       <span className="font-semibold">
                         {formatCurrency(invoice.amount)}
                       </span>

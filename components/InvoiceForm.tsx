@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+//@ts-nocheck
 "use client";
 import { useState, useRef } from "react";
-
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Script from "next/script";
-
 import {
   Step1Content,
   Step2Content,
@@ -38,6 +36,7 @@ export default function InvoiceForm() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isMerchant, setIsMerchant] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -46,6 +45,7 @@ export default function InvoiceForm() {
   const validateCurrentStep = () => {
     switch (currentStep) {
       case 1:
+        if (!isMerchant) return true;
         return (
           selectedMerchant !== null ||
           (toast.error("Please select a merchant"), false)
@@ -81,17 +81,39 @@ export default function InvoiceForm() {
     setLoading(true);
     const formData = new FormData();
     formData.append("file", invoiceImage!);
-    formData.append("merchantId", selectedMerchant!.id);
+    if (selectedMerchant) {
+      formData.append("merchantId", selectedMerchant.id);
+    }
     formData.append("amount", invoiceAmount);
+    formData.append("isMerchant", isMerchant.toString());
 
     try {
       const response = await fetch("/api/invoices", {
         method: "POST",
         body: formData,
       });
-      if (!response.ok)
+
+      if (!response.ok) {
         throw new Error(`Invoice creation failed: ${response.statusText}`);
-      toast.success("Invoice created successfully!");
+      }
+
+      const result = await response.json();
+
+      // Show appropriate success message based on cashback
+      if (result.cashbackAmount > 0) {
+        toast.success(
+          `Invoice uploaded successfully! You received ₹${result.cashbackAmount} cashback!`
+        );
+      } else if (!isMerchant) {
+        const remainingBills =
+          15 - (result.invoice.user?.nonMerchantBillCount % 15);
+        toast.success(
+          `Invoice uploaded successfully! Upload ${remainingBills} more non-merchant bills for cashback.`
+        );
+      } else {
+        toast.success("Invoice uploaded successfully!");
+      }
+
       router.push("/");
       router.refresh();
     } catch (error) {
@@ -126,16 +148,37 @@ export default function InvoiceForm() {
         return (
           <>
             <CardHeader>
-              <CardTitle>Step 1: Select Merchant</CardTitle>
+              <CardTitle>Step 1: Select Bill Type</CardTitle>
               <CardDescription>
-                Choose the merchant for this invoice
+                Choose merchant or non-merchant bill
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {/* <AdComponent step={1} /> */}
-              <Step1Content
-                {...{ selectedMerchant, setSelectedMerchant, loading }}
-              />
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    variant={isMerchant ? "default" : "outline"}
+                    className="flex-1"
+                    onClick={() => setIsMerchant(true)}
+                  >
+                    Merchant Bill
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={!isMerchant ? "default" : "outline"}
+                    className="flex-1"
+                    onClick={() => setIsMerchant(false)}
+                  >
+                    Non-Merchant Bill
+                  </Button>
+                </div>
+                {isMerchant && (
+                  <Step1Content
+                    {...{ selectedMerchant, setSelectedMerchant, loading }}
+                  />
+                )}
+              </div>
             </CardContent>
           </>
         );
@@ -147,7 +190,6 @@ export default function InvoiceForm() {
               <CardDescription>Specify the invoice amount</CardDescription>
             </CardHeader>
             <CardContent>
-              {/* <AdComponent step={2} /> */}
               <Step2Content {...{ invoiceAmount, setInvoiceAmount, loading }} />
             </CardContent>
           </>
@@ -160,7 +202,6 @@ export default function InvoiceForm() {
               <CardDescription>Upload an image of your invoice</CardDescription>
             </CardHeader>
             <CardContent>
-              {/* <AdComponent step={3} /> */}
               <Step3Content
                 {...{
                   invoiceImage,
@@ -185,9 +226,13 @@ export default function InvoiceForm() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {/* <AdComponent step={4} /> */}
               <Step4Content
-                {...{ selectedMerchant, invoiceAmount, previewUrl }}
+                {...{
+                  selectedMerchant,
+                  invoiceAmount,
+                  previewUrl,
+                  isMerchant,
+                }}
               />
             </CardContent>
           </>

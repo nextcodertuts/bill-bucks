@@ -25,6 +25,7 @@ interface StepContentProps {
   loading: boolean;
   fileInputRef: React.RefObject<HTMLInputElement>;
   handleFileButtonClick: () => void;
+  isMerchant?: boolean;
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -148,14 +149,23 @@ export const Step4Content = ({
   selectedMerchant,
   invoiceAmount,
   previewUrl,
+  isMerchant,
 }: StepContentProps) => (
   <>
     <div className="space-y-4">
       <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
         <div>
-          <h3 className="text-sm font-medium text-gray-500">Merchant</h3>
-          <p className="font-medium">{selectedMerchant?.name}</p>
+          <h3 className="text-sm font-medium text-gray-500">Bill Type</h3>
+          <p className="font-medium">
+            {isMerchant ? "Merchant Bill" : "Non-Merchant Bill"}
+          </p>
         </div>
+        {isMerchant && selectedMerchant && (
+          <div>
+            <h3 className="text-sm font-medium text-gray-500">Merchant</h3>
+            <p className="font-medium">{selectedMerchant.name}</p>
+          </div>
+        )}
         <div>
           <h3 className="text-sm font-medium text-gray-500">Amount</h3>
           <p className="font-medium">₹{parseFloat(invoiceAmount).toFixed(2)}</p>
@@ -172,6 +182,14 @@ export const Step4Content = ({
             </div>
           </div>
         )}
+        <div className="mt-4 p-3 bg-purple-50 rounded-lg">
+          <h3 className="text-sm font-medium text-purple-700">Cashback Info</h3>
+          <p className="text-sm text-purple-600">
+            {isMerchant
+              ? "You'll receive instant cashback of ₹3-5 for this merchant bill!"
+              : "Upload 15 non-merchant bills to get ₹3 cashback. Keep collecting!"}
+          </p>
+        </div>
       </div>
     </div>
   </>
