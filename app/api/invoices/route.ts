@@ -25,6 +25,8 @@ export async function POST(request: Request) {
       );
     }
 
+    const invoiceAmount = parseFloat(amount);
+
     // Convert file to Blob
     const arrayBuffer = await file.arrayBuffer();
     const blob = new Blob([arrayBuffer], { type: file.type });
@@ -56,7 +58,7 @@ export async function POST(request: Request) {
         data: {
           merchantId: isMerchant ? merchantId : null,
           userId: user.id,
-          amount: parseFloat(amount),
+          amount: invoiceAmount,
           imageUrl,
           isMerchant,
         },
@@ -65,15 +67,12 @@ export async function POST(request: Request) {
       let cashbackAmount = 0;
       let cashbackType = "";
 
-      if (isMerchant) {
-        // For merchant bills - instant cashback
-        const merchant = await tx.merchant.findUnique({
-          where: { id: merchantId },
-          select: { cashbackAmount: true },
-        });
-        cashbackAmount = merchant ? Number(merchant.cashbackAmount) : 3;
+      if (isMerchant && invoiceAmount >= 300) {
+        // For merchant bills - instant cashback between 3-5 rupees only if amount >= 300
+        const randomCashback = Math.floor(Math.random() * (5 - 3 + 1)) + 3;
+        cashbackAmount = randomCashback;
         cashbackType = "MERCHANT";
-      } else {
+      } else if (!isMerchant) {
         // For non-merchant bills - check if eligible for cashback
         const updatedUser = await tx.user.update({
           where: { id: user.id },

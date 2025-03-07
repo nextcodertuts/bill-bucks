@@ -10,14 +10,19 @@ import { cn } from "@/lib/utils";
 // Sample image array - you can replace these with your own images
 const images = [
   {
+    src: "https://gist.github.com/user-attachments/assets/80efd26e-47f8-4a19-bf3d-f46876aedb01",
+    alt: "Image 1",
+    title: "Guranteed cashback",
+  },
+  {
     src: "https://gist.github.com/user-attachments/assets/efd3a053-5569-4637-8379-5c33106cb255",
     alt: "Image 1",
     title: "Beautiful Landscape",
   },
   {
-    src: "https://gist.github.com/user-attachments/assets/a2d529ad-3919-4bb8-8c0b-30a3b0b004f7",
+    src: "https://gist.github.com/user-attachments/assets/89e4581a-228c-400b-a94c-acf21fee72fa",
     alt: "Image 1",
-    title: "Beautiful Landscape",
+    title: "Ramdhanu",
   },
   {
     src: "https://gist.github.com/user-attachments/assets/c8b1673b-6799-4ef5-9da7-7c418467c790",
@@ -124,7 +129,7 @@ export function ImageSlider() {
           onTouchEnd={onTouchEnd}
         >
           <div
-            className="flex transition-transform duration-500 ease-out h-full"
+            className="flex transition-transform duration-500 ease-out"
             style={{
               transform: `translateX(-${currentIndex * 100}%)`,
               width: `${100 * extendedImages.length}%`,
@@ -139,7 +144,7 @@ export function ImageSlider() {
                 <Image
                   src={image.src || "/placeholder.svg"}
                   alt={image.alt}
-                  width={400}
+                  width={360}
                   height={250}
                   className="object-contain"
                   priority={index === 0}
