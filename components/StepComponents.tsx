@@ -186,7 +186,7 @@ export const Step4Content = ({
           <h3 className="text-sm font-medium text-purple-700">Cashback Info</h3>
           <p className="text-sm text-purple-600">
             {isMerchant
-              ? "You'll receive instant cashback of ₹3-5 for this merchant bill!"
+              ? "You'll receive instant cashback of ₹5-₹100 for this merchant bill!"
               : "Upload 15 non-merchant bills to get ₹3 cashback. Keep collecting!"}
           </p>
         </div>
