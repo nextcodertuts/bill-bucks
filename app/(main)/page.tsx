@@ -1,9 +1,9 @@
-import { ImageSlider } from "@/components/image-slider";
 import { validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SpendingStats } from "@/components/spending-stats";
 import HorizontalScroll from "@/components/HorizontalScroll";
 import AdComponent from "@/components/ads/AdComponent";
+import ImageCarousel from "@/components/image-carousel";
 
 export default async function Home() {
   const { user } = await validateRequest();
@@ -21,7 +21,7 @@ export default async function Home() {
         <HorizontalScroll />
       </div>
       <div>
-        <ImageSlider />
+        <ImageCarousel />
       </div>
       <div>
         <SpendingStats userId={user.id} />
