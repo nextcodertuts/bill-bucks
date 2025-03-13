@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Gift } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
+import SubscriptionButton from "@/components/SubscriptionButton";
 
 export default async function UserProfilePage() {
   const { user } = await validateRequest();
@@ -20,11 +21,17 @@ export default async function UserProfilePage() {
   // Fetch user balance
   const userWithBalance = await prisma.user.findUnique({
     where: { id: user?.id },
-    select: { balance: true, referralCode: true },
+    select: {
+      balance: true,
+      referralCode: true,
+      subscriptionStatus: true,
+      razorpaySubscriptionId: true,
+    },
   });
 
   const balance = userWithBalance?.balance || 0;
   const referralCode = userWithBalance?.referralCode || "";
+  const subscriptionStatus = userWithBalance?.subscriptionStatus;
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-6 mt-24">
@@ -49,23 +56,37 @@ export default async function UserProfilePage() {
           </div>
         </div>
       </div>
-      <Button className="w-full">
+
+      {/* Subscription Status */}
+      <div className="mt-6  bg-purple-50 rounded-lg">
+        <div className="flex items-center justify-center mb-4">
+          <span
+            className={`text-sm font-semibold px-3 py-1 rounded-full ${
+              isSubscribed
+                ? "bg-green-500 text-white"
+                : "bg-gray-400 text-white"
+            }`}
+          >
+            {isSubscribed ? "Active" : "Inactive"}
+          </span>
+        </div>
+
+        {!isSubscribed && (
+          <div className="">
+            <SubscriptionButton
+              subscriptionStatus={subscriptionStatus}
+              subscriptionId={userWithBalance?.razorpaySubscriptionId}
+            />
+          </div>
+        )}
+      </div>
+
+      <Button className="w-full mt-6">
         <Link href="/withdrawals">Withdrawal</Link>
       </Button>
 
       {/* Additional Details */}
       <div className="mt-6 space-y-4">
-        <div className="flex justify-between items-center">
-          <span className="text-gray-700 font-medium">Membership Status:</span>
-          <span
-            className={`text-sm font-semibold px-3 py-1 rounded-full ${
-              isSubscribed ? "bg-blue-500 text-white" : "bg-gray-400 text-white"
-            }`}
-          >
-            {isSubscribed ? "Premium Member" : "Active User"}
-          </span>
-        </div>
-
         <div className="flex justify-between items-center">
           <span className="text-gray-700 font-medium">Account Created:</span>
           <span className="text-gray-500 text-sm">
