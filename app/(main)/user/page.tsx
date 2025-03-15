@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import AdsterraBanner from "@/components/ads/AdsterraBanner";
 import { validateRequest } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
@@ -7,13 +6,17 @@ import { Gift } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import SubscriptionButton from "@/components/SubscriptionButton";
+import { redirect } from "next/navigation";
 
 export default async function UserProfilePage() {
   const { user } = await validateRequest();
 
+  if (!user) {
+    redirect("/login");
+  }
+
   const userName = user?.name || "Anonymous";
   const userPhone = user?.phoneNumber || "Not provided";
-  const isSubscribed = user?.subscribe || false;
   const initials = userName
     .split(" ")
     .map((n) => n[0])
@@ -25,14 +28,15 @@ export default async function UserProfilePage() {
     select: {
       balance: true,
       referralCode: true,
-      mandateStatus: true,
-      razorpayMandateId: true,
+      razorpaySubscriptionId: true,
+      subscriptionStatus: true,
     },
   });
 
   const balance = userWithDetails?.balance || 0;
   const referralCode = userWithDetails?.referralCode || "";
-  const mandateStatus = userWithDetails?.mandateStatus;
+  const subscriptionStatus = userWithDetails?.subscriptionStatus;
+  const subscriptionId = userWithDetails?.razorpaySubscriptionId;
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-6 mt-24">
@@ -59,30 +63,33 @@ export default async function UserProfilePage() {
       </div>
 
       {/* Verification Status */}
-      <div className="mt-6 bg-purple-50 rounded-lg p-4">
+      <div className="mt-6 bg-purple-50 rounded-lg">
         <div className="flex items-center justify-center mb-4">
           <span
             className={`text-sm font-semibold px-3 py-1 rounded-full ${
-              mandateStatus === "ACTIVE"
+              subscriptionStatus === "ACTIVE"
                 ? "bg-green-500 text-white"
                 : "bg-gray-400 text-white"
             }`}
           >
-            {mandateStatus === "ACTIVE" ? "Verified" : "Not Verified"}
+            {subscriptionStatus === "ACTIVE" ? "Verified" : "Not Verified"}
           </span>
         </div>
 
-        {mandateStatus !== "ACTIVE" && (
+        {subscriptionStatus !== "ACTIVE" && (
           <div className="space-y-2">
             <p className="text-sm text-center text-gray-600 mb-4">
               Verify your account to enable instant withdrawals
             </p>
-            <SubscriptionButton />
+            <SubscriptionButton
+              subscriptionStatus={subscriptionStatus}
+              subscriptionId={subscriptionId}
+            />
           </div>
         )}
       </div>
 
-      <Button className="w-full mt-6">
+      <Button className="w-full mt-6" asChild>
         <Link href="/withdrawals">Withdrawal</Link>
       </Button>
 

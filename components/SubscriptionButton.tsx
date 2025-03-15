@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -64,10 +64,6 @@ export default function SubscriptionButton({
               toast.error("Failed to activate subscription");
             }
           },
-          prefill: {
-            name: "Subha",
-            phone: "7076855311",
-          },
           theme: {
             color: "#7C3AED",
           },
@@ -91,7 +87,7 @@ export default function SubscriptionButton({
       case "FAILED":
         return "Retry Verification";
       default:
-        return "Verify & Subscribe";
+        return "Verify Account";
     }
   };
 

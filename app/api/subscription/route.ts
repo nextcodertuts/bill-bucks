@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     // Create a subscription token
     const subscription = await razorpay.subscriptions.create({
-      plan_id: "plan_Q6JqxwJB1TgvJU", // Monthly plan ID
+      plan_id: "plan_Q6JdUo0bbA58ni", // Monthly plan ID
       customer_notify: 1,
       quantity: 1,
       total_count: 12, // 12 months
