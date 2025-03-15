@@ -65,8 +65,8 @@ export default function SubscriptionButton({
             }
           },
           prefill: {
-            name: "User Name",
-            email: "user@example.com",
+            name: "Subha",
+            phone: "7076855311",
           },
           theme: {
             color: "#7C3AED",

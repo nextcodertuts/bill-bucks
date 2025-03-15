@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Gift } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import SubscriptionButton from "@/components/SubscriptionButton";
+import VerifyButton from "@/components/VerifyButton";
 
 export default async function UserProfilePage() {
   const { user } = await validateRequest();
@@ -18,20 +18,20 @@ export default async function UserProfilePage() {
     .map((n) => n[0])
     .join("");
 
-  // Fetch user balance
-  const userWithBalance = await prisma.user.findUnique({
+  // Fetch user balance and mandate status
+  const userWithDetails = await prisma.user.findUnique({
     where: { id: user?.id },
     select: {
       balance: true,
       referralCode: true,
-      subscriptionStatus: true,
-      razorpaySubscriptionId: true,
+      mandateStatus: true,
+      razorpayMandateId: true,
     },
   });
 
-  const balance = userWithBalance?.balance || 0;
-  const referralCode = userWithBalance?.referralCode || "";
-  const subscriptionStatus = userWithBalance?.subscriptionStatus;
+  const balance = userWithDetails?.balance || 0;
+  const referralCode = userWithDetails?.referralCode || "";
+  const mandateStatus = userWithDetails?.mandateStatus;
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-6 mt-24">
@@ -57,25 +57,28 @@ export default async function UserProfilePage() {
         </div>
       </div>
 
-      {/* Subscription Status */}
-      <div className="mt-6  bg-purple-50 rounded-lg">
+      {/* Verification Status */}
+      <div className="mt-6 bg-purple-50 rounded-lg p-4">
         <div className="flex items-center justify-center mb-4">
           <span
             className={`text-sm font-semibold px-3 py-1 rounded-full ${
-              isSubscribed
+              mandateStatus === "ACTIVE"
                 ? "bg-green-500 text-white"
                 : "bg-gray-400 text-white"
             }`}
           >
-            {isSubscribed ? "Active" : "Inactive"}
+            {mandateStatus === "ACTIVE" ? "Verified" : "Not Verified"}
           </span>
         </div>
 
-        {!isSubscribed && (
-          <div className="">
-            <SubscriptionButton
-              subscriptionStatus={subscriptionStatus}
-              subscriptionId={userWithBalance?.razorpaySubscriptionId}
+        {mandateStatus !== "ACTIVE" && (
+          <div className="space-y-2">
+            <p className="text-sm text-center text-gray-600 mb-4">
+              Verify your account to enable instant withdrawals
+            </p>
+            <VerifyButton
+              mandateStatus={mandateStatus}
+              mandateId={userWithDetails?.razorpayMandateId}
             />
           </div>
         )}

@@ -8,25 +8,28 @@ datasource db {
 }
 
 model User {
-  id                     String            @id @default(cuid())
-  name                   String?
-  avatarUrl              String?
-  phoneNumber            String            @unique
-  hashedPassword         String
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
-  subscribe              Boolean           @default(false)
-  balance                Decimal           @default(0) @db.Decimal(10, 2)
-  referralCode           String            @unique @default(cuid())
-  referredBy             String?
-  nonMerchantBillCount   Int               @default(0) // Track non-merchant bill count
-  razorpaySubscriptionId String?           @unique
-  subscriptionStatus     String? // PENDING, ACTIVE, CANCELLED, FAILED
-  sessions               Session[]
-  invoices               Invoice[]
-  referralHistory        ReferralHistory[]
-  withdrawals            Withdrawal[]
-  cashbacks              Cashback[] // New relation
+  id                   String            @id @default(cuid())
+  name                 String?
+  avatarUrl            String?
+  phoneNumber          String            @unique
+  hashedPassword       String
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  subscribe            Boolean           @default(false)
+  balance              Decimal           @default(0) @db.Decimal(10, 2)
+  referralCode         String            @unique @default(cuid())
+  referredBy           String?
+  nonMerchantBillCount Int               @default(0)
+  razorpayCustomerId   String?           @unique
+  razorpayMandateId    String?           @unique
+  razorpayOrderId      String?           @unique
+  razorpayPaymentId    String?           @unique
+  mandateStatus        String? // PENDING, ACTIVE, FAILED
+  sessions             Session[]
+  invoices             Invoice[]
+  referralHistory      ReferralHistory[]
+  withdrawals          Withdrawal[]
+  cashbacks            Cashback[]
 }
 
 model PushToken {
