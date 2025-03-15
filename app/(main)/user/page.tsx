@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import AdsterraBanner from "@/components/ads/AdsterraBanner";
 import { validateRequest } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
@@ -5,7 +6,7 @@ import Link from "next/link";
 import { Gift } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import VerifyButton from "@/components/VerifyButton";
+import SubscriptionButton from "@/components/SubscriptionButton";
 
 export default async function UserProfilePage() {
   const { user } = await validateRequest();
@@ -76,10 +77,7 @@ export default async function UserProfilePage() {
             <p className="text-sm text-center text-gray-600 mb-4">
               Verify your account to enable instant withdrawals
             </p>
-            <VerifyButton
-              mandateStatus={mandateStatus}
-              mandateId={userWithDetails?.razorpayMandateId}
-            />
+            <SubscriptionButton />
           </div>
         )}
       </div>
