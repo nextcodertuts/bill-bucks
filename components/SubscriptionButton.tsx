@@ -21,10 +21,15 @@ export default function SubscriptionButton({
     try {
       setLoading(true);
 
+      console.log("hello");
+
       // Create subscription
-      const response = await fetch("/api/subscription", {
-        method: "POST",
-      });
+      const response = await fetch(
+        "https://www.nextcoder.co.in/api/subscription",
+        {
+          method: "POST",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to create subscription");
@@ -63,6 +68,46 @@ export default function SubscriptionButton({
               console.error("Error updating subscription:", error);
               toast.error("Failed to activate subscription");
             }
+          },
+          prefill: {
+            name: "", // Will be filled by user
+            email: "", // Will be filled by user
+            contact: "", // Will be filled by user
+          },
+          config: {
+            display: {
+              blocks: {
+                banks: {
+                  name: "Pay using UPI or Net Banking",
+                  instruments: [
+                    {
+                      method: "upi",
+                    },
+                    {
+                      method: "netbanking",
+                    },
+                  ],
+                },
+                cards: {
+                  name: "Pay using Card",
+                  instruments: [
+                    {
+                      method: "card",
+                    },
+                  ],
+                },
+              },
+              sequence: ["block.banks", "block.cards"],
+              preferences: {
+                show_default_blocks: false,
+              },
+            },
+          },
+          modal: {
+            ondismiss: function () {
+              setLoading(false);
+              toast.error("Payment cancelled");
+            },
           },
           theme: {
             color: "#7C3AED",
