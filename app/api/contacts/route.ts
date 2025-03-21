@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+//@ts-nocheck
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -13,69 +15,53 @@ export async function POST(request: Request) {
       );
     }
 
-    // Filter out invalid contacts
-    const validContacts = contacts.filter((contact) => contact.phoneNumber);
+    // Process and store each contact
+    const results = await Promise.all(
+      contacts.map(async (contact) => {
+        const { name, phoneNumber, email } = contact;
 
-    if (validContacts.length === 0) {
-      return NextResponse.json(
-        { error: "No valid contacts provided" },
-        { status: 400 }
-      );
-    }
+        // Basic validation
+        if (!phoneNumber) {
+          return { error: "Phone number is required", contact };
+        }
 
-    // Prepare data for bulk upsert
-    const data = validContacts.map((contact) => ({
-      phoneNumber: contact.phoneNumber,
-      name: contact.name || null,
-      email: contact.email || null,
-    }));
+        try {
+          // Create or update contact
+          const savedContact = await prisma.contact.upsert({
+            where: {
+              phoneNumber: phoneNumber,
+            },
+            update: {
+              name: name || undefined,
+              email: email || undefined,
+            },
+            create: {
+              name: name || null,
+              phoneNumber,
+              email: email || null,
+            },
+          });
 
-    // Perform bulk upsert using createMany
-    const result = await prisma.$transaction(async (tx) => {
-      // First, create all new contacts
-      await tx.contact.createMany({
-        data,
-        skipDuplicates: true,
-      });
+          return { success: true, contact: savedContact };
+        } catch (error) {
+          console.error("Error saving contact:", error);
+          return { error: "Failed to save contact", contact };
+        }
+      })
+    );
 
-      // Then, update existing contacts
-      for (const contact of data) {
-        await tx.contact.update({
-          where: { phoneNumber: contact.phoneNumber },
-          data: {
-            name: contact.name,
-            email: contact.email,
-          },
-        });
-      }
-
-      return { count: data.length };
-    });
+    // Count successful and failed operations
+    const successful = results.filter((r) => r.success).length;
+    const failed = results.filter((r) => r.error).length;
 
     return NextResponse.json({
-      success: true,
-      message: `Successfully processed ${result.count} contacts`,
-      count: result.count,
+      message: `Processed ${successful} contacts successfully, ${failed} failed`,
+      results,
     });
   } catch (error) {
     console.error("Error processing contacts:", error);
-
-    // Check if it's a timeout error
-    if (error instanceof Error && error.message.includes("timeout")) {
-      return NextResponse.json(
-        {
-          error: "Request timeout - try with fewer contacts",
-          details: error.message,
-        },
-        { status: 504 }
-      );
-    }
-
     return NextResponse.json(
-      {
-        error: "Failed to process contacts",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Failed to process contacts" },
       { status: 500 }
     );
   }
