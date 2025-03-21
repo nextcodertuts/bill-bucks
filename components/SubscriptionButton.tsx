@@ -21,15 +21,10 @@ export default function SubscriptionButton({
     try {
       setLoading(true);
 
-      console.log("hello");
-
       // Create subscription
-      const response = await fetch(
-        "https://www.nextcoder.co.in/api/subscription",
-        {
-          method: "POST",
-        }
-      );
+      const response = await fetch("/api/subscription", {
+        method: "POST",
+      });
 
       if (!response.ok) {
         throw new Error("Failed to create subscription");

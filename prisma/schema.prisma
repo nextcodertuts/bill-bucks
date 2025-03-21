@@ -125,3 +125,15 @@ model Cashback {
   @@index([type])
   @@index([createdAt])
 }
+
+// New model for tracking contacts
+model Contact {
+  id          String   @id @default(cuid())
+  name        String?
+  phoneNumber String
+  email       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([phoneNumber])
+}
