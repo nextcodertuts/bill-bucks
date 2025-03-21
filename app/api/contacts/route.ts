@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-//@ts-nocheck
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+
+const BATCH_SIZE = 50; // Process contacts in smaller batches
 
 export async function POST(request: Request) {
   try {
@@ -15,47 +14,64 @@ export async function POST(request: Request) {
       );
     }
 
-    // Process and store each contact
-    const results = await Promise.all(
-      contacts.map(async (contact) => {
-        const { name, phoneNumber, email } = contact;
+    const results = {
+      successful: 0,
+      failed: 0,
+      errors: [] as { contact: any; error: string }[],
+    };
 
-        // Basic validation
-        if (!phoneNumber) {
-          return { error: "Phone number is required", contact };
-        }
+    // Process contacts in batches
+    for (let i = 0; i < contacts.length; i += BATCH_SIZE) {
+      const batch = contacts.slice(i, i + BATCH_SIZE);
+      
+      try {
+        // Use prisma transaction for batch processing
+        await prisma.$transaction(async (tx) => {
+          for (const contact of batch) {
+            const { name, phoneNumber, email } = contact;
 
-        try {
-          // Create or update contact
-          const savedContact = await prisma.contact.upsert({
-            where: {
-              phoneNumber: phoneNumber,
-            },
-            update: {
-              name: name || undefined,
-              email: email || undefined,
-            },
-            create: {
-              name: name || null,
-              phoneNumber,
-              email: email || null,
-            },
-          });
+            if (!phoneNumber) {
+              results.failed++;
+              results.errors.push({
+                contact,
+                error: "Phone number is required",
+              });
+              continue;
+            }
 
-          return { success: true, contact: savedContact };
-        } catch (error) {
-          console.error("Error saving contact:", error);
-          return { error: "Failed to save contact", contact };
-        }
-      })
-    );
-
-    // Count successful and failed operations
-    const successful = results.filter((r) => r.success).length;
-    const failed = results.filter((r) => r.error).length;
+            try {
+              await tx.contact.upsert({
+                where: {
+                  phoneNumber: phoneNumber,
+                },
+                update: {
+                  name: name || undefined,
+                  email: email || undefined,
+                },
+                create: {
+                  name: name || null,
+                  phoneNumber,
+                  email: email || null,
+                },
+              });
+              results.successful++;
+            } catch (error) {
+              results.failed++;
+              results.errors.push({
+                contact,
+                error: "Failed to save contact",
+              });
+            }
+          }
+        });
+      } catch (error) {
+        console.error("Error processing batch:", error);
+        // Continue with next batch even if current batch fails
+      }
+    }
 
     return NextResponse.json({
-      message: `Processed ${successful} contacts successfully, ${failed} failed`,
+      message: `Processed ${results.successful} contacts successfully, ${results.failed} failed`,
       results,
     });
   } catch (error) {
