@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -23,7 +25,7 @@ export async function POST(request: Request) {
     // Process contacts in batches
     for (let i = 0; i < contacts.length; i += BATCH_SIZE) {
       const batch = contacts.slice(i, i + BATCH_SIZE);
-      
+
       try {
         // Use prisma transaction for batch processing
         await prisma.$transaction(async (tx) => {
