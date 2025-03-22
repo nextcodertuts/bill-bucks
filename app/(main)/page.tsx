@@ -2,7 +2,7 @@ import { validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SpendingStats } from "@/components/spending-stats";
 import HorizontalScroll from "@/components/HorizontalScroll";
-import AdComponent from "@/components/ads/AdComponent";
+// import AdComponent from "@/components/ads/AdComponent";
 import ImageCarousel from "@/components/image-carousel";
 
 export default async function Home() {
@@ -14,7 +14,7 @@ export default async function Home() {
 
   return (
     <div className="p-4 space-y-6">
-      <AdComponent />
+      {/* <AdComponent /> */}
 
       <div>
         <h2 className="text-xl font-semibold pl-2">Online Merchants</h2>

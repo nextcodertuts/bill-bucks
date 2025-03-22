@@ -1,11 +1,11 @@
-import AdsterraBanner from "@/components/ads/AdsterraBanner";
+// import AdsterraBanner from "@/components/ads/AdsterraBanner";
 import { validateRequest } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { Gift } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import SubscriptionButton from "@/components/SubscriptionButton";
+// import SubscriptionButton from "@/components/SubscriptionButton";
 import { redirect } from "next/navigation";
 
 export default async function UserProfilePage() {
@@ -35,8 +35,8 @@ export default async function UserProfilePage() {
 
   const balance = userWithDetails?.balance || 0;
   const referralCode = userWithDetails?.referralCode || "";
-  const subscriptionStatus = userWithDetails?.subscriptionStatus;
-  const subscriptionId = userWithDetails?.razorpaySubscriptionId;
+  // const subscriptionStatus = userWithDetails?.subscriptionStatus;
+  // const subscriptionId = userWithDetails?.razorpaySubscriptionId;
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-6 mt-24">
@@ -63,7 +63,7 @@ export default async function UserProfilePage() {
       </div>
 
       {/* Verification Status */}
-      <div className="mt-6 bg-purple-50 rounded-lg">
+      {/* <div className="mt-6 bg-purple-50 rounded-lg">
         <div className="flex items-center justify-center mb-4">
           <span
             className={`text-sm font-semibold px-3 py-1 rounded-full ${
@@ -87,7 +87,7 @@ export default async function UserProfilePage() {
             />
           </div>
         )}
-      </div>
+      </div> */}
 
       <Button className="w-full mt-6" asChild>
         <Link href="/withdrawals">Withdrawal</Link>
@@ -126,7 +126,7 @@ export default async function UserProfilePage() {
           </div>
         </div>
       </div>
-      <AdsterraBanner />
+      {/* <AdsterraBanner /> */}
     </div>
   );
 }

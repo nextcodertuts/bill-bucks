@@ -126,7 +126,7 @@ export default function InvoiceForm() {
   };
 
   const renderStepIndicator = () => (
-    <div className="flex justify-center mb-4">
+    <div className="flex justify-center mb-4 pt-2">
       {[1, 2, 3, 4].map((step) => (
         <div
           key={step}

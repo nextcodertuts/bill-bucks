@@ -77,7 +77,7 @@ export function SpendingStats({ userId }: SpendingStatsProps) {
             </div>
           </CardContent>
         </Card>
-        <MediumRectangleAd />
+        {/* <MediumRectangleAd /> */}
         <Card>
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>
@@ -100,7 +100,7 @@ export function SpendingStats({ userId }: SpendingStatsProps) {
                       key={invoice.id}
                       className="flex justify-between items-center"
                     >
-                      <span>{invoice.merchant?.name || "NON-Merchant"}</span>
+                      <span>NON-Merchant</span>
 
                       <span className="font-semibold">
                         {formatCurrency(invoice.amount)}
