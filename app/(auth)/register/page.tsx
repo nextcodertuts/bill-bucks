@@ -139,15 +139,25 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-purple-50">
-      <div className="">
-        <Image src="/bill-bucks.png" height={150} width={150} alt="img" />
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <div className=" mt-8 flex flex-col items-center">
+        <Image
+          src="/cashbucks-icon.png"
+          height={100}
+          width={100}
+          alt="img"
+          className="rounded-xl"
+        />
+        <h2 className="font-bold text-2xl tracking-wide text-primary ">
+          <span className="text-secondary">Bill</span>
+          <span>BuckZ</span>
+        </h2>
       </div>
       <div>
         <p className="font-bold text-2xl my-6">Register</p>
       </div>
 
-      <Card className="w-full max-w-md overflow-hidden border-0 bg-transparent">
+      <Card className="w-full max-w-md overflow-hidden bg-transparent rounded-md">
         <CardHeader className="py-0">
           <CardTitle hidden>Register</CardTitle>
         </CardHeader>

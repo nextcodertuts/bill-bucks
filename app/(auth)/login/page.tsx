@@ -69,11 +69,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-purple-50">
-      <div className="pb-6">
-        <Image src="/bill-bucks.png" height={150} width={150} alt="img" />
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 ">
+      <div className=" mt-8 flex flex-col items-center mb-4">
+        <Image
+          src="/cashbucks-icon.png"
+          height={100}
+          width={100}
+          alt="img"
+          className="rounded-xl"
+        />
+        <h2 className="font-bold text-2xl tracking-wide text-primary ">
+          <span className="text-secondary">Bill</span>
+          <span>BuckZ</span>
+        </h2>
       </div>
-      <Card className="w-full max-w-md overflow-hidden shadow-lg bg-transparent border-0">
+      <Card className="w-full max-w-md overflow-hidden  bg-transparent rounded-md">
         <CardHeader className="pb-4">
           <CardTitle className="text-xl font-bold text-center">
             Welcome Back
