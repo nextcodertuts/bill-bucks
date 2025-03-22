@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen pt-12 pb-16 bg-purple-50">
+    <div className="relative min-h-screen pt-12 pb-16 bg-white">
       <Topnav />
       {children}
       <BottomNav />

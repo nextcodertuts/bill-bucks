@@ -2,7 +2,7 @@
 import { validateRequest } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
-import { Gift } from "lucide-react";
+import { Gift, PhoneCall } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 // import SubscriptionButton from "@/components/SubscriptionButton";
@@ -43,17 +43,20 @@ export default async function UserProfilePage() {
       {/* Profile Header */}
       <div className="flex items-center gap-6 border-b pb-6">
         {/* Profile Avatar */}
-        <div className="h-20 w-20 rounded-full bg-purple-500 text-white flex items-center justify-center text-3xl font-bold uppercase shadow-md">
+        <div className="h-20 w-20 rounded-full bg-primary text-secondary flex items-center justify-center text-3xl font-bold uppercase shadow-md">
           {initials}
         </div>
 
         {/* User Info */}
         <div className="space-y-2">
           <h1 className="text-2xl font-bold capitalize">{userName}</h1>
-          <p className="text-gray-600 text-sm">📞 {userPhone}</p>
+          <p className=" text-sm flex gap-2 items-center">
+            <PhoneCall className="w-4 h-4" />
+            {userPhone}
+          </p>
 
           {/* Referral Balance */}
-          <div className="flex items-center gap-2 text-purple-600">
+          <div className="flex items-center gap-2 text-secondary">
             <Gift className="h-4 w-4" />
             <span className="font-semibold">
               {formatCurrency(Number(balance))}
@@ -112,7 +115,7 @@ export default async function UserProfilePage() {
             <h3 className="font-semibold">Referral Program</h3>
             <Link
               href="/referrals"
-              className="text-sm text-purple-600 font-medium hover:underline"
+              className="text-xs text-primary font-medium underline"
             >
               View Details
             </Link>

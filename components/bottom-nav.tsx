@@ -15,8 +15,8 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
   return (
     <nav
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex p-2  items-center justify-around bg-purple-600/80  mx-2 backdrop-blur-md",
-        "mx-auto max-w-sm rounded-full border border-purple-400/20",
+        "fixed bottom-0 left-0 right-0 z-50 flex p-2 items-center justify-around bg-primary/90 mx-2 backdrop-blur-md",
+        "mx-auto max-w-sm rounded-full border border-secondary/20",
         "bottom-2",
         className
       )}
@@ -25,7 +25,7 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-purple-500/20"
+        className="text-white hover:bg-secondary"
         asChild
       >
         <Link href="/">
@@ -36,7 +36,7 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-purple-500/20"
+        className="text-white hover:bg-secondary"
         asChild
       >
         <Link href="/add-invoice">
@@ -47,7 +47,7 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-purple-500/20"
+        className="text-white hover:bg-secondary"
         asChild
       >
         <Link href="/referrals">
@@ -58,7 +58,7 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-purple-500/20"
+        className="text-white hover:bg-secondary"
         asChild
       >
         <Link href="/user">
@@ -68,7 +68,7 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
       </Button>
       <Button
         variant="ghost"
-        className="text-white hover:bg-purple-500/20"
+        className="text-white hover:bg-secondary"
         onClick={() => logout()}
       >
         <LogOut className="h-5 w-5" />

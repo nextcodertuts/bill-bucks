@@ -119,8 +119,8 @@ export default function ReferralCard() {
         <CardTitle>Referral Program</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="bg-purple-100 p-4 rounded-lg">
-          <p className="text-sm text-purple-800 mb-2">
+        <div className="bg-primary p-4 rounded-lg">
+          <p className="text-sm text-secondary mb-2">
             Invite friends to Bill Bucks! When they upload 5 invoices, you'll
             earn ₹10.
           </p>
@@ -146,13 +146,13 @@ export default function ReferralCard() {
         <div className="flex justify-between items-center">
           <div>
             <p className="text-sm text-muted-foreground">Your Balance</p>
-            <p className="text-2xl font-bold">
+            <p className="text-2xl font-bold text-secondary">
               {formatCurrency(referralData.balance)}
             </p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Friends Referred</p>
-            <p className="text-2xl font-bold text-center">
+            <p className="text-2xl font-bold text-center text-secondary">
               {referralData.referredUsersCount}
             </p>
           </div>

@@ -132,9 +132,9 @@ export default function InvoiceForm() {
           key={step}
           className={`w-3 h-3 rounded-full mx-1 ${
             step === currentStep
-              ? "bg-purple-600"
+              ? "bg-secondary"
               : step < currentStep
-              ? "bg-purple-400"
+              ? "bg-secondary/60"
               : "bg-gray-300"
           }`}
         />
@@ -258,7 +258,7 @@ export default function InvoiceForm() {
           __html: `console.log('Adsterra script loaded');`,
         }}
       />
-      <Card className="w-full max-w-md mx-auto bg-transparent">
+      <Card className="w-full max-w-md mx-auto bg-transparent rounded-md">
         <form onSubmit={handleSubmit}>
           {renderStepIndicator()}
           {renderStepContent()}
