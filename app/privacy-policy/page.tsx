@@ -3,26 +3,26 @@ import Head from "next/head";
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
+    <div className="min-h-screen  py-10">
       <Head>
-        <title>Privacy Policy - Bill Bucks</title>
-        <meta name="description" content="Privacy Policy for Bill Bucks" />
+        <title>Privacy Policy - Bill Buckz</title>
+        <meta name="description" content="Privacy Policy for Bill Buckz" />
       </Head>
       <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-4 text-center">
-          Privacy Policy for Bill Bucks
+          Privacy Policy for Bill Buckz
         </h1>
         <p className="text-sm text-gray-600 mb-6">
           <strong>Last Updated: February 27, 2025</strong>
         </p>
 
         <p className="mb-4">
-          Welcome to Bill Bucks! We value your privacy and are committed to
+          Welcome to Bill Buckz! We value your privacy and are committed to
           protecting your personal information. This Privacy Policy explains how
           we collect, use, store, and safeguard your data when you use our
-          application ("Bill Bucks" or "the App"), built on Next.js, to store
-          and track your invoices. By using Bill Bucks, you agree to the
-          practices described in this policy.
+          application ("Bill Buckz" or "the App"), to store and track your
+          invoices. By using Bill Buckz, you agree to the practices described in
+          this policy.
         </p>
 
         <section className="mb-6">
@@ -31,7 +31,7 @@ export default function PrivacyPolicy() {
           </h2>
           <p>
             We collect the following information from you when you use Bill
-            Bucks:
+            Buckz:
           </p>
           <ul className="list-disc ml-6">
             <li>
@@ -58,7 +58,7 @@ export default function PrivacyPolicy() {
           <p>We use the information we collect for the following purposes:</p>
           <ul className="list-disc ml-6">
             <li>
-              To provide and improve the functionality of Bill Bucks, enabling
+              To provide and improve the functionality of Bill Buckz, enabling
               you to store, manage, and track your invoices effectively.
             </li>
             <li>
@@ -109,7 +109,7 @@ export default function PrivacyPolicy() {
             <li>
               <strong>Legal Requirements</strong>: We may disclose your
               information if required by law or to protect the rights, safety,
-              or property of Bill Bucks, our users, or others.
+              or property of Bill Buckz, our users, or others.
             </li>
           </ul>
         </section>
@@ -158,7 +158,7 @@ export default function PrivacyPolicy() {
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">7. Third-Party Links</h2>
           <p>
-            Bill Bucks may contain links to third-party websites or services
+            Bill Buckz may contain links to third-party websites or services
             (e.g., payment processors). We are not responsible for the privacy
             practices of these external sites. We encourage you to review their
             privacy policies before interacting with them.
@@ -168,7 +168,7 @@ export default function PrivacyPolicy() {
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">8. Children’s Privacy</h2>
           <p>
-            Bill Bucks is not intended for use by individuals under the age of
+            Bill Buckz is not intended for use by individuals under the age of
             13. We do not knowingly collect personal information from children
             under 13. If we learn that such data has been collected, we will
             take steps to delete it immediately.
@@ -189,7 +189,31 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">10. Contact Us</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            10. Marketing and Promotional Communication
+          </h2>
+          <p>
+            By providing your phone number during registration, you agree to
+            receive marketing and promotional updates from Bill Buckz. These
+            updates may include special offers, promotions, and other relevant
+            information.
+          </p>
+          <p>
+            You can opt-out of receiving promotional messages at any time by
+            following the instructions provided in the messages or by contacting
+            us at
+            <a
+              href="mailto:contact@nextcoder.co.in"
+              className="text-blue-600 hover:underline"
+            >
+              {" "}
+              contact@nextcoder.co.in
+            </a>
+            .
+          </p>
+        </section>
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">11. Contact Us</h2>
           <p>
             If you have any questions, concerns, or requests regarding this
             Privacy Policy or your data, please reach out to us at:
@@ -208,7 +232,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <p className="text-center text-gray-600">
-          Thank you for trusting Bill Bucks with your invoice tracking needs.
+          Thank you for trusting Bill Buckz with your invoice tracking needs.
           We’re here to make your experience seamless and secure!
         </p>
       </div>

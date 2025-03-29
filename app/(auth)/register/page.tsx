@@ -36,6 +36,7 @@ import {
   Gift,
 } from "lucide-react";
 import Image from "next/image";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const requiredString = z.string().trim().min(1, "Required");
 
@@ -49,6 +50,9 @@ const schema = z
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
     referralCode: z.string().optional().nullable(),
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -72,6 +76,7 @@ export default function RegisterPage() {
       password: "",
       confirmPassword: "",
       referralCode: "",
+      acceptTerms: false,
     },
   });
 
@@ -310,6 +315,32 @@ export default function RegisterPage() {
                       </p>
                     )}
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="acceptTerms"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        I accept the{" "}
+                        <Link
+                          href="/privacy-policy"
+                          className="text-primary hover:underline"
+                        >
+                          terms and conditions
+                        </Link>
+                      </FormLabel>
+                      <FormMessage />
+                    </div>
                   </FormItem>
                 )}
               />
