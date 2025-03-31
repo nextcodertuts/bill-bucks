@@ -333,7 +333,7 @@ export default function RegisterPage() {
                       <FormLabel>
                         I accept the{" "}
                         <Link
-                          href="/privacy-policy"
+                          href="/terms"
                           className="text-primary hover:underline"
                         >
                           terms and conditions
