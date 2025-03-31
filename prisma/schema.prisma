@@ -56,10 +56,21 @@ model Merchant {
   address        String
   phone          String
   city           String
-  cashbackAmount Decimal   @default(3.00) @db.Decimal(10, 2) // Default cashback amount
+  latitude       Float? // New field for location
+  longitude      Float? // New field for location
+  cashbackAmount Decimal   @default(3.00) @db.Decimal(10, 2)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   invoices       Invoice[]
+  category       String? // New field for merchant category
+  openingTime    String? // New field for store hours
+  closingTime    String? // New field for store hours
+  isOpen         Boolean   @default(true)
+  rating         Float?    @default(0)
+  logoUrl        String? // New field for store image
+  shopImageUrl   String? // New field for store image
+
+  @@index([latitude, longitude])
 }
 
 model Invoice {

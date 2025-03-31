@@ -1,11 +1,10 @@
 "use client";
 import type React from "react";
 import Link from "next/link";
-import { Home, User, LogOut, PlusCircle, Gift } from "lucide-react";
+import { Home, User, PlusCircle, Gift, MapPin } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { logout } from "@/app/(auth)/actions";
 
 interface BottomNavProps extends React.HTMLAttributes<HTMLElement> {
   className?: string;
@@ -31,6 +30,17 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
         <Link href="/">
           <Home className="h-12 w-12" />
           <span className="sr-only">Home</span>
+        </Link>
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-white hover:bg-secondary"
+        asChild
+      >
+        <Link href="/nearby">
+          <MapPin className="h-12 w-12" />
+          <span className="sr-only">Nearby</span>
         </Link>
       </Button>
       <Button
@@ -65,14 +75,6 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
           <User className="h-12 w-12" />
           <span className="sr-only">profile</span>
         </Link>
-      </Button>
-      <Button
-        variant="ghost"
-        className="text-white hover:bg-secondary"
-        onClick={() => logout()}
-      >
-        <LogOut className="h-5 w-5" />
-        <span className="sr-only">Logout</span>
       </Button>
     </nav>
   );
