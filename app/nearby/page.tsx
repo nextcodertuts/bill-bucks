@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, Clock, Star, Phone, Loader2 } from "lucide-react";
+import { Search, MapPin, Clock, Star, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useLocation } from "@/hooks/useLocation";
-import { calculateDistance, formatDistance } from "@/lib/distance";
+import { formatDistance } from "@/lib/distance";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 
 interface Merchant {
@@ -27,7 +28,7 @@ interface Merchant {
   isOpen: boolean;
   rating: number;
   imageUrl: string;
-  distance?: number;
+  distance: number;
 }
 
 const PAGE_SIZE = 10;
@@ -38,6 +39,7 @@ export default function NearbyMerchantsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const initialFetchDone = useRef(false);
 
   const {
     location,
@@ -72,7 +74,8 @@ export default function NearbyMerchantsPage() {
       setLoading(true);
       const params = new URLSearchParams();
 
-      if (lat && lng) {
+      // Only add coordinates if they are valid
+      if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
         params.append("lat", lat.toString());
         params.append("lng", lng.toString());
       }
@@ -88,30 +91,11 @@ export default function NearbyMerchantsPage() {
       if (!response.ok) throw new Error("Failed to fetch merchants");
 
       const data = await response.json();
-      let processedData = data.merchants;
 
-      // Calculate distances if location is available
-      if (lat && lng) {
-        processedData = processedData.map((merchant: Merchant) => ({
-          ...merchant,
-          distance:
-            merchant.latitude && merchant.longitude
-              ? calculateDistance(
-                  lat,
-                  lng,
-                  merchant.latitude,
-                  merchant.longitude
-                )
-              : null,
-        }));
+      // No need to calculate distances or sort - the server already did this
+      const processedData = data.merchants;
 
-        // Sort by distance
-        processedData.sort((a: Merchant, b: Merchant) => {
-          if (!a.distance) return 1;
-          if (!b.distance) return -1;
-          return a.distance - b.distance;
-        });
-      }
+      console.log("Merchants with distance:", processedData);
 
       if (currentPage === 1) {
         setMerchants(processedData);
@@ -119,7 +103,7 @@ export default function NearbyMerchantsPage() {
         setMerchants((prev) => [...prev, ...processedData]);
       }
 
-      setHasMore(processedData.length === PAGE_SIZE);
+      setHasMore(data.hasMore);
     } catch (error) {
       console.error("Error fetching merchants:", error);
       toast.error("Failed to load nearby merchants");
@@ -130,16 +114,23 @@ export default function NearbyMerchantsPage() {
 
   // Initial location check and merchant fetch
   useEffect(() => {
-    if (location) {
-      fetchMerchants(location.latitude, location.longitude);
-    } else if (!locationLoading && !locationError) {
-      // If no location and not loading/error, fetch without coordinates
-      fetchMerchants();
+    // Only fetch once when location is available or when location loading is complete
+    if (!initialFetchDone.current) {
+      if (location) {
+        fetchMerchants(location.latitude, location.longitude);
+        initialFetchDone.current = true;
+      } else if (!locationLoading) {
+        // Only fetch without coordinates if location loading is complete
+        fetchMerchants();
+        initialFetchDone.current = true;
+      }
     }
-  }, [location, locationLoading, locationError]);
+  }, [location, locationLoading]);
 
   // Handle search updates with debounce
   useEffect(() => {
+    if (!initialFetchDone.current) return;
+
     const debounceTimeout = setTimeout(() => {
       setPage(1); // Reset page when search changes
       if (location) {
@@ -243,14 +234,13 @@ export default function NearbyMerchantsPage() {
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4" />
                           <span>
-                            {merchant.openingTime} - {merchant.closingTime}
+                            {merchant.openingTime ? merchant.openingTime : "NA"}{" "}
+                            -{" "}
+                            {merchant.closingTime ? merchant.closingTime : "NA"}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4" />
-                          <span>{merchant.phone}</span>
-                        </div>
-                        {merchant.distance && (
+
+                        {merchant.distance !== undefined && (
                           <div className="text-xs text-primary font-medium">
                             {formatDistance(merchant.distance)} away
                           </div>
