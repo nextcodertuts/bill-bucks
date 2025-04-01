@@ -142,7 +142,7 @@ export default function NearbyMerchantsPage() {
               <Card className="hover:shadow-lg transition-shadow">
                 <div className="relative h-40">
                   <Image
-                    src={merchant.imageUrl || "/placeholder-store.jpg"}
+                    src={merchant.imageUrl || "/cashbucks-icon.png"}
                     alt={merchant.name}
                     fill
                     className="object-cover rounded-t-lg"
