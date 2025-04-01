@@ -15,12 +15,16 @@ export async function GET(request: Request) {
     const lng = parseFloat(searchParams.get("lng") || "0");
     const q = searchParams.get("q") || "";
     const radius = parseFloat(searchParams.get("radius") || "10"); // Default 10km radius
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const skip = (page - 1) * limit;
 
     // Base query with pagination
-    const query: any = {
-      where: {},
-      orderBy: [{ name: "asc" }],
-      take: 50, // Limit results
+    const query = {
+      where: {} as any,
+      orderBy: [{ name: "asc" }] as any,
+      take: limit,
+      skip,
     };
 
     // Add search filter if query exists
@@ -72,8 +76,13 @@ export async function GET(request: Request) {
     }
 
     const merchants = await prisma.merchant.findMany(query);
+    const total = await prisma.merchant.count({ where: query.where });
 
-    return NextResponse.json(merchants);
+    return NextResponse.json({
+      merchants,
+      total,
+      hasMore: skip + merchants.length < total,
+    });
   } catch (error) {
     console.error("Error fetching nearby merchants:", error);
     return NextResponse.json(
