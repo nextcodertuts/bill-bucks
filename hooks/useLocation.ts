@@ -29,11 +29,20 @@ export function useLocation(): UseLocationReturn {
 
       const position = await new Promise<GeolocationPosition>(
         (resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0,
-          });
+          navigator.permissions
+            .query({ name: "geolocation" })
+            .then((permissionStatus) => {
+              if (permissionStatus.state === "denied") {
+                reject(new Error("Location permission denied"));
+                return;
+              }
+
+              navigator.geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0,
+              });
+            });
         }
       );
 
@@ -41,13 +50,18 @@ export function useLocation(): UseLocationReturn {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
       });
+      setError(null);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to get location";
       setError(errorMessage);
-      toast.error(
-        "Could not get your location. Please enable location services."
-      );
+
+      // Only show toast for permission denied
+      if (errorMessage.includes("denied")) {
+        toast.error(
+          "Please enable location access in your browser settings for better results"
+        );
+      }
     } finally {
       setLoading(false);
     }
