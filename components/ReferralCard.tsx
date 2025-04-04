@@ -124,8 +124,8 @@ export default function ReferralCard() {
             Invite friends to Bill Bucks! When they upload 5 invoices, you'll
             earn ₹10.
           </p>
-          <div className="flex items-center justify-between bg-white p-3 rounded border">
-            <div className="font-mono font-medium">
+          <div className="flex items-center justify-between  bg-white p-3 rounded border">
+            <div className="font-mono font-medium text-sm">
               {referralData.referralCode}
             </div>
             <Button

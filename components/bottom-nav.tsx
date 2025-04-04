@@ -14,7 +14,7 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
   return (
     <nav
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex p-2 items-center justify-around bg-primary/90 mx-2 backdrop-blur-md",
+        "fixed bottom-0 left-0 right-0 z-50 flex p-3 items-center justify-around bg-primary/90 mx-2 backdrop-blur-md",
         "mx-auto max-w-sm rounded-full border border-secondary/20",
         "bottom-2",
         className
@@ -24,55 +24,55 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-secondary"
+        className="text-white hover:bg-secondary p-2"
         asChild
       >
         <Link href="/">
-          <Home className="h-12 w-12" />
+          <Home className="h-16 w-16" />
           <span className="sr-only">Home</span>
         </Link>
       </Button>
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-secondary"
+        className="text-white hover:bg-secondary p-2"
         asChild
       >
         <Link href="/nearby">
-          <MapPin className="h-12 w-12" />
+          <MapPin className="h-16 w-16" />
           <span className="sr-only">Nearby</span>
         </Link>
       </Button>
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-secondary"
+        className="text-white hover:bg-secondary p-2"
         asChild
       >
         <Link href="/add-invoice">
-          <PlusCircle className="h-12 w-12" />
+          <PlusCircle className="h-16 w-16" />
           <span className="sr-only">Add</span>
         </Link>
       </Button>
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-secondary"
+        className="text-white hover:bg-secondary p-2"
         asChild
       >
         <Link href="/referrals">
-          <Gift className="h-12 w-12" />
+          <Gift className="h-16 w-16" />
           <span className="sr-only">Referrals</span>
         </Link>
       </Button>
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-secondary"
+        className="text-white hover:bg-secondary p-2"
         asChild
       >
         <Link href="/user">
-          <User className="h-12 w-12" />
+          <User className="h-16 w-16" />
           <span className="sr-only">profile</span>
         </Link>
       </Button>

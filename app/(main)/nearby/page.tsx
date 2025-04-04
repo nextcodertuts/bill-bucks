@@ -155,7 +155,7 @@ export default function NearbyMerchantsPage() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <div className="sticky top-0 bg-background pt-14 pb-4 z-10 space-y-4">
+      <div className="">
         <div className="relative">
           <Input
             type="search"
