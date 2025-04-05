@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, Clock, Star, Loader2 } from "lucide-react";
+import { Search, MapPin, Clock, Star, Loader2, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -39,6 +39,7 @@ export default function NearbyMerchantsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
   const initialFetchDone = useRef(false);
 
   const {
@@ -74,7 +75,6 @@ export default function NearbyMerchantsPage() {
       setLoading(true);
       const params = new URLSearchParams();
 
-      // Only add coordinates if they are valid
       if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
         params.append("lat", lat.toString());
         params.append("lng", lng.toString());
@@ -91,8 +91,6 @@ export default function NearbyMerchantsPage() {
       if (!response.ok) throw new Error("Failed to fetch merchants");
 
       const data = await response.json();
-
-      // No need to calculate distances or sort - the server already did this
       const processedData = data.merchants;
 
       if (currentPage === 1) {
@@ -110,27 +108,38 @@ export default function NearbyMerchantsPage() {
     }
   };
 
+  // Handle location retry
+  useEffect(() => {
+    if (!location && !locationLoading && retryCount < 3) {
+      const timer = setTimeout(() => {
+        setRetryCount((prev) => prev + 1);
+        getLocation();
+      }, 2000); // Retry every 2 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [location, locationLoading, retryCount, getLocation]);
+
   // Initial location check and merchant fetch
   useEffect(() => {
-    // Only fetch once when location is available or when location loading is complete
     if (!initialFetchDone.current) {
       if (location) {
         fetchMerchants(location.latitude, location.longitude);
         initialFetchDone.current = true;
-      } else if (!locationLoading) {
-        // Only fetch without coordinates if location loading is complete
+      } else if (!locationLoading && retryCount >= 3) {
+        // If we've tried 3 times and still no location, fetch without coordinates
         fetchMerchants();
         initialFetchDone.current = true;
       }
     }
-  }, [location, locationLoading]);
+  }, [location, locationLoading, retryCount]);
 
   // Handle search updates with debounce
   useEffect(() => {
     if (!initialFetchDone.current) return;
 
     const debounceTimeout = setTimeout(() => {
-      setPage(1); // Reset page when search changes
+      setPage(1);
       if (location) {
         fetchMerchants(location.latitude, location.longitude, 1);
       } else {
@@ -140,6 +149,11 @@ export default function NearbyMerchantsPage() {
 
     return () => clearTimeout(debounceTimeout);
   }, [searchQuery]);
+
+  const handleRetryLocation = () => {
+    setRetryCount(0);
+    getLocation();
+  };
 
   const LoadingState = () => (
     <div className="space-y-4">
@@ -153,7 +167,7 @@ export default function NearbyMerchantsPage() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <div className="">
+      <div className="space-y-4">
         <div className="relative">
           <Input
             type="search"
@@ -168,13 +182,18 @@ export default function NearbyMerchantsPage() {
         {!location && !locationLoading && (
           <div className="flex items-center justify-between bg-yellow-50 p-3 rounded-lg">
             <p className="text-sm text-yellow-800">
-              Enable location for better results
+              {retryCount >= 3
+                ? "Unable to get location. Showing all merchants."
+                : "Trying to get your location..."}
             </p>
-            <Button size="sm" onClick={getLocation}>
+            <Button size="sm" onClick={handleRetryLocation}>
               {locationLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Enable Location"
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4" />
+                  Retry
+                </div>
               )}
             </Button>
           </div>
@@ -237,7 +256,6 @@ export default function NearbyMerchantsPage() {
                             {merchant.closingTime ? merchant.closingTime : "NA"}
                           </span>
                         </div>
-
                         {merchant.distance !== undefined && (
                           <div className="text-xs text-primary font-medium">
                             {formatDistance(merchant.distance)} away
@@ -248,7 +266,6 @@ export default function NearbyMerchantsPage() {
                   </Card>
                 </Link>
               ))}
-              {/* Infinite scroll trigger element */}
               {hasMore && (
                 <div
                   ref={loadMoreRef}
