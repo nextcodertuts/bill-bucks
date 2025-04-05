@@ -66,6 +66,13 @@ export default function Topnav() {
             >
               <div className="py-1" role="menu">
                 <Link
+                  href="/contact"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setShowMenu(false)}
+                >
+                  Contact Us
+                </Link>
+                <Link
                   href="/privacy-policy"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   onClick={() => setShowMenu(false)}

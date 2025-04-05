@@ -95,8 +95,6 @@ export default function NearbyMerchantsPage() {
       // No need to calculate distances or sort - the server already did this
       const processedData = data.merchants;
 
-      console.log("Merchants with distance:", processedData);
-
       if (currentPage === 1) {
         setMerchants(processedData);
       } else {
