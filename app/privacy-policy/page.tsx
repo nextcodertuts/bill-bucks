@@ -3,7 +3,7 @@ import Head from "next/head";
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen  py-10">
+    <div className="min-h-screen py-10">
       <Head>
         <title>Privacy Policy - Bill Buckz</title>
         <meta name="description" content="Privacy Policy for Bill Buckz" />
@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
           Privacy Policy for Bill Buckz
         </h1>
         <p className="text-sm text-gray-600 mb-6">
-          <strong>Last Updated: February 27, 2025</strong>
+          <strong>Last Updated: April 6, 2025</strong>
         </p>
 
         <p className="mb-4">
@@ -35,8 +35,14 @@ export default function PrivacyPolicy() {
           </p>
           <ul className="list-disc ml-6">
             <li>
-              <strong>Personal Information</strong>: Your name, Your phone
-              number
+              <strong>Personal Information</strong>: Your name and phone number
+              only. We do not collect email addresses.
+            </li>
+            <li>
+              <strong>Contact Information</strong>: With your explicit consent,
+              we may access your device contacts (names and phone numbers only)
+              to help you connect with friends who are already using our app and
+              to provide personalized recommendations.
             </li>
             <li>
               <strong>Invoice Details</strong>: Information related to the
@@ -47,7 +53,7 @@ export default function PrivacyPolicy() {
           </ul>
           <p className="mt-2">
             We only collect information that you voluntarily provide while using
-            the App.
+            the App or that you explicitly consent to share.
           </p>
         </section>
 
@@ -62,6 +68,14 @@ export default function PrivacyPolicy() {
               you to store, manage, and track your invoices effectively.
             </li>
             <li>
+              To enhance your social experience by connecting you with friends
+              who are already using the app.
+            </li>
+            <li>
+              To provide personalized recommendations and features based on your
+              contacts and usage patterns.
+            </li>
+            <li>
               To communicate with you, such as responding to your inquiries or
               sending updates about the App (e.g., new features or service
               changes).
@@ -73,7 +87,45 @@ export default function PrivacyPolicy() {
 
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">
-            3. How We Store and Protect Your Information
+            3. Contact Access and Usage
+          </h2>
+          <p>
+            Our app may request access to your device contacts. Here's how we
+            handle this data:
+          </p>
+          <ul className="list-disc ml-6">
+            <li>
+              <strong>Explicit Consent</strong>: We will always ask for your
+              explicit permission before accessing your contacts. You can
+              decline this permission without affecting the core functionality
+              of the app.
+            </li>
+            <li>
+              <strong>Limited Data Collection</strong>: We only collect names
+              and phone numbers from your contacts. We do not collect email
+              addresses or other contact details.
+            </li>
+            <li>
+              <strong>Purpose of Collection</strong>: We use this information
+              to:
+              <ul className="list-disc ml-6 mt-2">
+                <li>
+                  Show you which of your friends are already using the app
+                </li>
+                <li>Make it easier to share content with your friends</li>
+                <li>Provide personalized recommendations</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Control Over Your Data</strong>: You can revoke contact
+              permissions at any time through your device settings.
+            </li>
+          </ul>
+        </section>
+
+        <section className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">
+            4. How We Store and Protect Your Information
           </h2>
           <ul className="list-disc ml-6">
             <li>
@@ -93,7 +145,7 @@ export default function PrivacyPolicy() {
 
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">
-            4. Sharing Your Information
+            5. Sharing Your Information
           </h2>
           <p>
             We do not sell, trade, or otherwise share your personal information
@@ -116,7 +168,7 @@ export default function PrivacyPolicy() {
 
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">
-            5. Your Choices and Rights
+            6. Your Choices and Rights
           </h2>
           <ul className="list-disc ml-6">
             <li>
@@ -125,8 +177,14 @@ export default function PrivacyPolicy() {
               any time.
             </li>
             <li>
+              <strong>Contact Permissions</strong>: You can grant or revoke
+              contact access permissions at any time through your device
+              settings.
+            </li>
+            <li>
               <strong>Deletion</strong>: If you wish to delete your account and
-              all associated data, please contact us at{" "}
+              all associated data (including any stored contacts), please
+              contact us at{" "}
               <a
                 href="mailto:contact@nextcoder.co.in"
                 className="text-blue-600 hover:underline"
@@ -145,18 +203,18 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">6. Data Retention</h2>
+          <h2 className="text-xl font-semibold mb-2">7. Data Retention</h2>
           <p>
-            We retain your personal information and invoice details for as long
-            as your account is active or as needed to provide you with the App’s
-            services. If you delete your account, we will remove your data
-            within a reasonable timeframe, except where we are required to
-            retain it for legal or operational purposes.
+            We retain your personal information, contact data, and invoice
+            details for as long as your account is active or as needed to
+            provide you with the App's services. If you delete your account, we
+            will remove your data within a reasonable timeframe, except where we
+            are required to retain it for legal or operational purposes.
           </p>
         </section>
 
         <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">7. Third-Party Links</h2>
+          <h2 className="text-xl font-semibold mb-2">8. Third-Party Links</h2>
           <p>
             Bill Buckz may contain links to third-party websites or services
             (e.g., payment processors). We are not responsible for the privacy
@@ -166,7 +224,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">8. Children’s Privacy</h2>
+          <h2 className="text-xl font-semibold mb-2">9. Children's Privacy</h2>
           <p>
             Bill Buckz is not intended for use by individuals under the age of
             13. We do not knowingly collect personal information from children
@@ -177,20 +235,20 @@ export default function PrivacyPolicy() {
 
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">
-            9. Changes to This Privacy Policy
+            10. Changes to This Privacy Policy
           </h2>
           <p>
             We may update this Privacy Policy from time to time to reflect
             changes in our practices or legal requirements. We will notify you
             of significant updates by posting the revised policy in the App or
-            via email (if provided). The “Last Updated” date at the top of this
+            via email (if provided). The "Last Updated" date at the top of this
             page indicates when the policy was last revised.
           </p>
         </section>
 
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">
-            10. Marketing and Promotional Communication
+            11. Marketing and Promotional Communication
           </h2>
           <p>
             By providing your phone number during registration, you agree to
@@ -213,7 +271,7 @@ export default function PrivacyPolicy() {
           </p>
         </section>
         <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">11. Contact Us</h2>
+          <h2 className="text-xl font-semibold mb-2">12. Contact Us</h2>
           <p>
             If you have any questions, concerns, or requests regarding this
             Privacy Policy or your data, please reach out to us at:
@@ -233,7 +291,7 @@ export default function PrivacyPolicy() {
 
         <p className="text-center text-gray-600">
           Thank you for trusting Bill Buckz with your invoice tracking needs.
-          We’re here to make your experience seamless and secure!
+          We're here to make your experience seamless and secure!
         </p>
       </div>
     </div>
