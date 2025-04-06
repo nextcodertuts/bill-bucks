@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Phone, MessageSquare } from "lucide-react";
 
 export default function ContactPage() {
-  const phoneNumber = "01169313594";
+  const phoneNumber = "+911169313594";
   const whatsappLink = `https://wa.me/${phoneNumber}`;
 
   const handleCall = () => {
