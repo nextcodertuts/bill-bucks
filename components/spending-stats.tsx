@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatCurrency } from "@/lib/utils";
-import MediumRectangleAd from "./ads/MediumRectangleAd";
 
 interface SpendingStatsProps {
   userId: string;
@@ -93,6 +92,15 @@ export function SpendingStats({ userId }: SpendingStatsProps) {
                       className="animate-pulse bg-gray-200 h-6 w-full rounded"
                     />
                   ))
+              ) : stats.invoices.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground">
+                    No transactions found for this period.
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Transactions will appear here once they are processed.
+                  </p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {stats.invoices.slice(0, 3).map((invoice) => (
@@ -101,7 +109,6 @@ export function SpendingStats({ userId }: SpendingStatsProps) {
                       className="flex justify-between items-center"
                     >
                       <span>{invoice.merchant?.name || "NON-Merchant"}</span>
-
                       <span className="font-semibold">
                         {formatCurrency(invoice.amount)}
                       </span>

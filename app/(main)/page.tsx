@@ -1,9 +1,8 @@
 import { validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SpendingStats } from "@/components/spending-stats";
-import HorizontalScroll from "@/components/HorizontalScroll";
-// import AdComponent from "@/components/ads/AdComponent";
 import ImageCarousel from "@/components/image-carousel";
+import { BNPLHighlight } from "@/components/BNPLHighlight";
 
 export default async function Home() {
   const { user } = await validateRequest();
@@ -13,13 +12,8 @@ export default async function Home() {
   }
 
   return (
-    <div className="p-4 space-y-6">
-      {/* <AdComponent /> */}
-
-      <div>
-        <h2 className="text-xl font-semibold pl-2">Online Merchants</h2>
-        <HorizontalScroll />
-      </div>
+    <div className="p-4 space-y-6 mt-1">
+      <BNPLHighlight userId={user.id} />
       <div>
         <ImageCarousel />
       </div>
