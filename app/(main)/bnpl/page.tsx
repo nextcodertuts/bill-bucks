@@ -31,6 +31,27 @@ export default async function BNPLPage() {
         </p>
       </div>
 
+      <Card className="bg-primary text-primary-foreground mb-6">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex items-center gap-4 mb-4 md:mb-0">
+              <div className="bg-primary-foreground/20 p-3 rounded-full">
+                <Clock className="h-8 w-8" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">0% Interest</h2>
+                <p className="text-primary-foreground/90">
+                  For up to 18 months on eligible purchases
+                </p>
+              </div>
+            </div>
+            <div className="text-sm px-4 py-2 bg-primary-foreground/20 rounded-full font-medium">
+              Limited Time Offer
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -48,7 +69,8 @@ export default async function BNPLPage() {
             <Clock className="h-8 w-8 text-primary mb-2" />
             <CardTitle>Flexible Payments</CardTitle>
             <CardDescription>
-              Split your purchases into 3 easy monthly installments
+              Split your purchases into easy monthly installments with 0%
+              interest for up to 18 months
             </CardDescription>
           </CardHeader>
         </Card>
@@ -98,7 +120,7 @@ export default async function BNPLPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-2">
@@ -131,6 +153,19 @@ export default async function BNPLPage() {
             </div>
             <p className="text-sm text-muted-foreground">
               Use at all participating merchants in our network
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-2 border-primary">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle2 className="h-5 w-5 text-green-500" />
+              <h3 className="font-semibold">0% Interest Offer</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Pay absolutely no interest for up to 18 months on qualifying
+              purchases
             </p>
           </CardContent>
         </Card>
