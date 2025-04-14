@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
@@ -6,13 +5,24 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, Clock, Star, Loader2, RefreshCw } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Clock,
+  Star,
+  Loader2,
+  RefreshCw,
+  Store,
+  AlertCircle,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useLocation } from "@/hooks/useLocation";
 import { formatDistance } from "@/lib/distance";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Merchant {
   id: string;
@@ -40,6 +50,7 @@ export default function NearbyMerchantsPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const initialFetchDone = useRef(false);
 
   const {
@@ -51,6 +62,7 @@ export default function NearbyMerchantsPage() {
 
   const loadMoreMerchants = async () => {
     try {
+      setFetchError(null);
       const nextPage = page + 1;
       await fetchMerchants(location?.latitude, location?.longitude, nextPage);
       setPage(nextPage);
@@ -73,6 +85,7 @@ export default function NearbyMerchantsPage() {
   ) => {
     try {
       setLoading(true);
+      setFetchError(null);
       const params = new URLSearchParams();
 
       if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
@@ -88,7 +101,10 @@ export default function NearbyMerchantsPage() {
       params.append("limit", PAGE_SIZE.toString());
 
       const response = await fetch(`/api/merchants/nearby?${params}`);
-      if (!response.ok) throw new Error("Failed to fetch merchants");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to fetch merchants");
+      }
 
       const data = await response.json();
       const processedData = data.merchants;
@@ -102,6 +118,11 @@ export default function NearbyMerchantsPage() {
       setHasMore(data.hasMore);
     } catch (error) {
       console.error("Error fetching merchants:", error);
+      setFetchError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load nearby merchants"
+      );
       toast.error("Failed to load nearby merchants");
     } finally {
       setLoading(false);
@@ -155,14 +176,29 @@ export default function NearbyMerchantsPage() {
     getLocation();
   };
 
-  const LoadingState = () => (
-    <div className="space-y-4">
-      {[1, 2, 3].map((i) => (
-        <Card key={i} className="animate-pulse">
-          <CardContent className="h-32"></CardContent>
-        </Card>
-      ))}
-    </div>
+  const handleRetryFetch = () => {
+    if (location) {
+      fetchMerchants(location.latitude, location.longitude, 1);
+    } else {
+      fetchMerchants(undefined, undefined, 1);
+    }
+  };
+
+  const MerchantCardSkeleton = () => (
+    <Card className="overflow-hidden">
+      <div className="relative h-40 bg-muted animate-pulse" />
+      <CardContent className="p-4 space-y-3">
+        <div className="flex justify-between items-start">
+          <Skeleton className="h-6 w-2/3" />
+          <Skeleton className="h-4 w-10" />
+        </div>
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/4" />
+        </div>
+      </CardContent>
+    </Card>
   );
 
   return (
@@ -175,6 +211,7 @@ export default function NearbyMerchantsPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
+            disabled={loading && !initialFetchDone.current}
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         </div>
@@ -186,27 +223,69 @@ export default function NearbyMerchantsPage() {
                 ? "Unable to get location. Showing all merchants."
                 : "Trying to get your location..."}
             </p>
-            <Button size="sm" onClick={handleRetryLocation}>
+            <Button size="sm" onClick={handleRetryLocation} variant="outline">
               {locationLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
               ) : (
-                <div className="flex items-center gap-2">
-                  <RefreshCw className="h-4 w-4" />
-                  Retry
-                </div>
+                <RefreshCw className="h-4 w-4 mr-2" />
               )}
+              Retry
             </Button>
           </div>
         )}
+
+        {locationError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {locationError}. Showing merchants without location filtering.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
-      {loading ? (
-        <LoadingState />
+      {fetchError && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4 mr-2" />
+          <AlertDescription className="flex-1">{fetchError}</AlertDescription>
+          <Button
+            size="sm"
+            onClick={handleRetryFetch}
+            variant="outline"
+            className="ml-auto"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Retry
+          </Button>
+        </Alert>
+      )}
+
+      {loading && !merchants.length ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <MerchantCardSkeleton key={i} />
+          ))}
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {merchants.length === 0 ? (
-            <div className="col-span-full text-center py-8 text-muted-foreground">
-              No merchants found nearby
+            <div className="col-span-full flex flex-col items-center justify-center py-12 text-muted-foreground">
+              <Store className="h-12 w-12 mb-4 text-muted" />
+              <h3 className="text-lg font-medium mb-1">No merchants found</h3>
+              <p className="text-sm text-center max-w-md">
+                {searchQuery
+                  ? `No results for "${searchQuery}". Try a different search term.`
+                  : "No merchants found in this area. Try expanding your search or try again later."}
+              </p>
+              {searchQuery && (
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => setSearchQuery("")}
+                >
+                  Clear search
+                </Button>
+              )}
             </div>
           ) : (
             <>
@@ -215,41 +294,44 @@ export default function NearbyMerchantsPage() {
                   href={`/add-invoice?merchant=${merchant.id}`}
                   key={merchant.id}
                 >
-                  <Card className="hover:shadow-lg transition-shadow">
+                  <Card className="h-full hover:shadow-lg transition-shadow overflow-hidden">
                     <div className="relative h-40">
                       <Image
                         src={merchant.imageUrl || "/cashbucks-icon.png"}
                         alt={merchant.name}
                         fill
-                        className="object-cover rounded-t-lg"
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                       <span
                         className={`absolute top-2 right-2 ${
                           merchant.isOpen ? "bg-green-500" : "bg-red-500"
-                        } text-white px-2 py-1 rounded-full text-xs`}
+                        } text-white px-2 py-1 rounded-full text-xs font-medium`}
                       >
                         {merchant.isOpen ? "Open" : "Closed"}
                       </span>
                     </div>
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold text-lg">
+                        <h3 className="font-semibold text-lg line-clamp-1">
                           {merchant.name}
                         </h3>
-                        <div className="flex items-center">
+                        <div className="flex items-center shrink-0 ml-2">
                           <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="ml-1 text-sm">
-                            {merchant.rating}
+                          <span className="ml-1 text-sm font-medium">
+                            {merchant.rating.toFixed(1)}
                           </span>
                         </div>
                       </div>
                       <div className="space-y-2 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>{merchant.address}</span>
+                        <div className="flex items-start gap-2">
+                          <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
+                          <span className="line-clamp-2">
+                            {merchant.address}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4" />
+                          <Clock className="h-4 w-4 shrink-0" />
                           <span>
                             {merchant.openingTime ? merchant.openingTime : "NA"}{" "}
                             -{" "}
@@ -257,7 +339,7 @@ export default function NearbyMerchantsPage() {
                           </span>
                         </div>
                         {merchant.distance !== undefined && (
-                          <div className="text-xs text-primary font-medium">
+                          <div className="text-xs text-primary font-medium mt-1">
                             {formatDistance(merchant.distance)} away
                           </div>
                         )}
