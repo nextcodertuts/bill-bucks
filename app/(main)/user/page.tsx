@@ -1,7 +1,5 @@
-import { BellIcon, UserPlus } from "lucide-react";
-
+import { BellIcon, UserPlus, Receipt, Coins } from "lucide-react";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import { validateRequest } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
@@ -62,6 +60,22 @@ export default async function UserProfilePage() {
         <Button className="w-full" asChild>
           <Link href="/withdrawals">Withdrawal</Link>
         </Button>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Button variant="outline" asChild>
+            <Link href="/invoices">
+              <Receipt className="mr-2 h-4 w-4" />
+              Uploaded Invoices
+            </Link>
+          </Button>
+
+          <Button variant="outline" asChild>
+            <Link href="/cashbacks">
+              <Coins className="mr-2 h-4 w-4" />
+              Cashbacks
+            </Link>
+          </Button>
+        </div>
 
         <Button className="w-full" variant="secondary" asChild>
           <Link href="/invite-friends">

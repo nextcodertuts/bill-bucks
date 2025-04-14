@@ -14,9 +14,9 @@ export function BottomNav({ className, ...props }: BottomNavProps) {
   return (
     <nav
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex p-3 items-center justify-around bg-primary/90 mx-2 backdrop-blur-md",
-        "mx-auto max-w-sm rounded-full border border-secondary/20",
-        "bottom-2",
+        "fixed bottom-0 left-0 right-0 z-50 flex p-2 items-center justify-around bg-primary/90 mx-1 backdrop-blur-md",
+        "mx-auto max-w-sm rounded-lg border border-secondary/20",
+        "bottom-1",
         className
       )}
       {...props}
