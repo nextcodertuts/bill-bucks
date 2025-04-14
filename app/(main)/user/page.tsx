@@ -77,12 +77,12 @@ export default async function UserProfilePage() {
           </Button>
         </div>
 
-        <Button className="w-full" variant="secondary" asChild>
+        {/* <Button className="w-full" variant="secondary" asChild>
           <Link href="/invite-friends">
             <UserPlus className="mr-2 h-4 w-4" />
             Invite Friends
           </Link>
-        </Button>
+        </Button> */}
       </div>
 
       <div className="mt-6 space-y-4">
