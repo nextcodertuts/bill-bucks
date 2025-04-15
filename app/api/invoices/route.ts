@@ -62,6 +62,13 @@ export async function POST(request: Request) {
           imageUrl,
           isMerchant,
         },
+        include: {
+          user: {
+            select: {
+              nonMerchantBillCount: true,
+            },
+          },
+        },
       });
 
       let cashbackAmount = 0;
@@ -107,7 +114,22 @@ export async function POST(request: Request) {
         });
       }
 
-      return { invoice, cashbackAmount, cashbackType };
+      // Get the updated user data
+      const updatedUserData = await tx.user.findUnique({
+        where: { id: user.id },
+        select: {
+          nonMerchantBillCount: true,
+        },
+      });
+
+      return {
+        invoice: {
+          ...invoice,
+          user: updatedUserData,
+        },
+        cashbackAmount,
+        cashbackType,
+      };
     });
 
     return NextResponse.json(result, { status: 201 });

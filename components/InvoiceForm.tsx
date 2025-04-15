@@ -106,7 +106,7 @@ export default function InvoiceForm() {
         );
       } else if (!isMerchant) {
         const remainingBills =
-          15 - (result.invoice.user?.nonMerchantBillCount % 15);
+          15 - (result.invoice.user.nonMerchantBillCount % 15);
         toast.success(
           `Invoice uploaded successfully! Upload ${remainingBills} more non-merchant bills for cashback.`
         );
