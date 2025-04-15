@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useEffect, useState } from "react";
@@ -22,7 +23,14 @@ export function BNPLHighlight({ userId }: BNPLHighlightProps) {
       try {
         const response = await fetch("/api/invoices?period=all");
         const data = await response.json();
-        setTotalSpent(data.total || 0);
+        // Calculate total only for merchant bills
+        const merchantTotal = data.invoices
+          .filter((invoice: any) => invoice.isMerchant)
+          .reduce(
+            (sum: number, invoice: any) => sum + Number(invoice.amount),
+            0
+          );
+        setTotalSpent(merchantTotal);
       } catch (error) {
         console.error("Error fetching total spent:", error);
       } finally {
@@ -49,7 +57,9 @@ export function BNPLHighlight({ userId }: BNPLHighlightProps) {
             <p className="text-sm text-primary-foreground/80">
               {isEligible
                 ? "You're eligible for BNPL! Click to activate."
-                : `${formatCurrency(targetAmount - totalSpent)} more to unlock`}
+                : `${formatCurrency(
+                    targetAmount - totalSpent
+                  )} more in merchant bills to unlock`}
             </p>
           </div>
           <Button asChild variant="secondary" size="sm" className="shrink-0">

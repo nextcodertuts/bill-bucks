@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useEffect, useState } from "react";
@@ -21,7 +22,14 @@ export function BNPLEligibility({ userId }: BNPLEligibilityProps) {
       try {
         const response = await fetch("/api/invoices?period=all");
         const data = await response.json();
-        setTotalSpent(data.total || 0);
+        // Calculate total only for merchant bills
+        const merchantTotal = data.invoices
+          .filter((invoice: any) => invoice.isMerchant)
+          .reduce(
+            (sum: number, invoice: any) => sum + Number(invoice.amount),
+            0
+          );
+        setTotalSpent(merchantTotal);
       } catch (error) {
         console.error("Error fetching total spent:", error);
       } finally {
@@ -60,7 +68,9 @@ export function BNPLEligibility({ userId }: BNPLEligibilityProps) {
           {/* Progress Bar */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Progress towards BNPL eligibility</span>
+              <span>
+                Progress towards BNPL eligibility (Merchant bills only)
+              </span>
               <span className="font-medium">
                 {formatCurrency(totalSpent)} / {formatCurrency(targetAmount)}
               </span>
@@ -102,7 +112,7 @@ export function BNPLEligibility({ userId }: BNPLEligibilityProps) {
                 >
                   {isEligible
                     ? "You can now access Buy Now, Pay Later features"
-                    : `Upload more invoices worth ${formatCurrency(
+                    : `Upload more merchant bills worth ${formatCurrency(
                         targetAmount - totalSpent
                       )} to unlock BNPL`}
                 </p>
