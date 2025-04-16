@@ -13,7 +13,7 @@ export default async function Home() {
 
   return (
     <div className="p-4 space-y-6 mt-1">
-      <BNPLHighlight userId={user.id} />
+      {/* <BNPLHighlight userId={user.id} /> */}
       <div>
         <ImageCarousel />
       </div>
