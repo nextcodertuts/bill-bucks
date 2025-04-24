@@ -33,12 +33,12 @@ export async function GET(request: Request) {
     }
 
     // Calculate wallet statistics
-    const [withdrawals, cashbacks, pendingCashbacks] = await Promise.all([
-      // Get total withdrawn amount
+    const [withdrawals, cashbacks] = await Promise.all([
+      // Get total withdrawn amount (COMPLETED status only)
       prisma.withdrawal.aggregate({
         where: {
           userId,
-          status: "Completed",
+          status: "COMPLETED",
         },
         _sum: { amount: true },
       }),
@@ -47,18 +47,6 @@ export async function GET(request: Request) {
       prisma.cashback.aggregate({
         where: { userId },
         _sum: { amount: true },
-      }),
-
-      // Get pending cashbacks (from invoices with pending status)
-      prisma.invoice.aggregate({
-        where: {
-          userId,
-          status: "PENDING",
-          cashback: { isNot: null },
-        },
-        _sum: {
-          amount: true,
-        },
       }),
     ]);
 
@@ -127,9 +115,10 @@ export async function GET(request: Request) {
     // Calculate wallet balances
     const totalEarned = cashbacks._sum.amount || 0;
     const totalWithdrawn = withdrawals._sum.amount || 0;
-    const pendingAmount = pendingCashbacks._sum.amount
-      ? pendingCashbacks._sum.amount * 0.03
-      : 0; // Assuming 3% cashback on pending invoices
+
+    // Calculate pending amount as total cashbacks minus successful withdrawals
+    const pendingAmount = Math.max(0, totalEarned - totalWithdrawn);
+
     const availableBalance = user.balance;
 
     return NextResponse.json({
