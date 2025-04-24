@@ -112,6 +112,31 @@ export async function GET(request: Request) {
       merchantName: cashback.invoice.merchant?.name || "Non-Merchant Bill",
     }));
 
+    // Get recent invoices (top 3)
+    const recentInvoices = await prisma.invoice.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+      include: {
+        merchant: true,
+      },
+    });
+
+    // Format invoice data
+    const formattedInvoices = recentInvoices.map((invoice) => ({
+      id: invoice.id,
+      amount: invoice.amount.toString(),
+      imageUrl: invoice.imageUrl,
+      status: invoice.status,
+      isMerchant: invoice.isMerchant,
+      merchantName: invoice.merchant?.name || "Non-Merchant Bill",
+      date: invoice.createdAt.toLocaleDateString("en-IN"),
+      time: invoice.createdAt.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    }));
+
     // Calculate wallet balances
     const totalEarned = cashbacks._sum.amount || 0;
     const totalWithdrawn = withdrawals._sum.amount || 0;
@@ -134,6 +159,7 @@ export async function GET(request: Request) {
       },
       withdrawals: formattedWithdrawals,
       cashbacks: formattedCashbacks,
+      recentInvoices: formattedInvoices,
     });
   } catch (error) {
     console.error("Error fetching wallet data:", error);
