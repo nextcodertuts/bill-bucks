@@ -3,16 +3,10 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { validateRequest } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
 
 export async function GET(request: Request) {
   try {
-    const { user } = await validateRequest();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const lat = Number.parseFloat(searchParams.get("lat") || "0");
     const lng = Number.parseFloat(searchParams.get("lng") || "0");
