@@ -1,7 +1,37 @@
+import prisma from "@/lib/prisma";
 import { type NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { userId, amount, imageUrl, isMerchant, merchantId } = body;
+
+    if (!userId || !amount || !imageUrl || isMerchant === undefined) {
+      return NextResponse.json(
+        { message: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const invoice = await prisma.invoice.create({
+      data: {
+        userId,
+        amount: amount, // Make sure amount is passed as a string or number
+        imageUrl,
+        isMerchant,
+        merchantId: isMerchant ? merchantId : null, // ensure null for non-merchants
+      },
+    });
+
+    return NextResponse.json(invoice, { status: 201 });
+  } catch (error) {
+    console.error("Invoice upload error:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error", error },
+      { status: 500 }
+    );
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
