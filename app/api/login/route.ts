@@ -20,6 +20,7 @@ export async function POST(request: Request) {
         id: true,
         hashedPassword: true,
         name: true,
+        avatarUrl: true,
         phoneNumber: true,
         balance: true,
         referralCode: true,
