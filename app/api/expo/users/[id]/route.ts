@@ -42,10 +42,11 @@ export async function GET(
 // PUT endpoint to update a user's profile
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = params.id;
+    const { id } = await params;
+    const userId = id;
     const { name, phoneNumber, avatarUrl } = await request.json();
 
     // Validate input
@@ -105,10 +106,11 @@ export async function PUT(
 // DELETE endpoint to delete a user
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = params.id;
+    const { id } = await params;
+    const userId = id;
 
     // Check if user exists
     const user = await prisma.user.findUnique({
