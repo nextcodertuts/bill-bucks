@@ -48,6 +48,7 @@ export async function GET(request: Request) {
           name: true,
           phone: true,
           rating: true,
+          category: true,
           logoUrl: true,
         },
         orderBy: [{ rating: "desc" }, { name: "asc" }],
