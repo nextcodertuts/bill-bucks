@@ -70,6 +70,9 @@ model Merchant {
   logoUrl        String? // New field for store image
   shopImageUrl   String? // New field for store image
 
+  @@index([phone])
+  @@index([name])
+  @@index([city])
   @@index([latitude, longitude])
 }
 
