@@ -51,29 +51,50 @@ model Session {
 }
 
 model Merchant {
-  id             String    @id @default(cuid())
+  id             String         @id @default(cuid())
   name           String
   address        String
   phone          String
   city           String
-  latitude       Float? // New field for location
-  longitude      Float? // New field for location
-  cashbackAmount Decimal   @default(3.00) @db.Decimal(10, 2)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  latitude       Float?
+  longitude      Float?
+  cashbackAmount Decimal        @default(3.00) @db.Decimal(10, 2)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   invoices       Invoice[]
-  category       String? // New field for merchant category
-  openingTime    String? // New field for store hours
-  closingTime    String? // New field for store hours
-  isOpen         Boolean   @default(true)
-  rating         Float?    @default(0)
-  logoUrl        String? // New field for store image
-  shopImageUrl   String? // New field for store image
+  category       String?
+  openingTime    String?
+  closingTime    String?
+  isOpen         Boolean        @default(true)
+  rating         Float?         @default(0)
+  logoUrl        String?
+  shopImageUrl   String?
+  status         String         @default("ACTIVE") // ACTIVE, SUSPENDED
+  billingCycles  BillingCycle[]
 
   @@index([phone])
   @@index([name])
   @@index([city])
   @@index([latitude, longitude])
+}
+
+model BillingCycle {
+  id            String    @id @default(cuid())
+  merchantId    String
+  startDate     DateTime
+  endDate       DateTime
+  totalAmount   Decimal   @db.Decimal(10, 2)
+  totalCashback Decimal   @db.Decimal(10, 2)
+  serviceCharge Decimal   @db.Decimal(10, 2)
+  status        String    @default("PENDING") // PENDING, PAID, OVERDUE
+  paidAt        DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  merchant      Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId])
+  @@index([status])
+  @@index([startDate, endDate])
 }
 
 model Invoice {
@@ -82,11 +103,11 @@ model Invoice {
   imageUrl   String
   status     String    @default("PENDING")
   notes      String?
-  isMerchant Boolean   @default(true) // Flag to identify merchant/non-merchant bills
+  isMerchant Boolean   @default(true)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   userId     String
-  merchantId String? // Made optional for non-merchant bills
+  merchantId String?
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   merchant   Merchant? @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   cashback   Cashback?
@@ -124,13 +145,12 @@ model Withdrawal {
   @@index([createdAt])
 }
 
-// New model for tracking cashbacks
 model Cashback {
   id        String   @id @default(cuid())
   userId    String
   invoiceId String   @unique
   amount    Decimal  @db.Decimal(10, 2)
-  type      String // "MERCHANT" or "NON_MERCHANT"
+  type      String
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
@@ -140,7 +160,6 @@ model Cashback {
   @@index([createdAt])
 }
 
-// New model for tracking contacts
 model Contact {
   id          String   @id @default(cuid())
   name        String?
